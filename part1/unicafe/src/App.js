@@ -7,15 +7,19 @@ const Count = ({ count, text }) => <div>{text} {count}</div>
 const Statistics = ({ good, neutral, bad }) => {
     const total = good + neutral + bad
 
+    if(total) {
+        return(
+            <div>
+                <Count count={good} text='good'/>
+                <Count count={neutral} text='neutral'/>
+                <Count count={bad} text='bad'/>
+                <div>average {(good - bad)/total}</div>
+                <div>positive {good*100/total} %</div>
+            </div>
+        )
+    }
     return(
-        <div>
-            <h1>statistics</h1>
-            <Count count={good} text='good'/>
-            <Count count={neutral} text='neutral'/>
-            <Count count={bad} text='bad'/>
-            <div>average {total && (good - bad)/total}</div>
-            <div>positive {total && good*100/total} %</div>
-        </div>
+        <p>No feedback given</p>
     )
 }
 
@@ -33,6 +37,7 @@ const App = () => {
                 <Button handleClick={() => setGood(good + 1)} text={'good'}/>
                 <Button handleClick={() => setNeutral(neutral + 1)} text={'neutral'}/>
                 <Button handleClick={() => setBad(bad + 1)} text={'bad'}/>
+                <h1>statistics</h1>
                 <Statistics good={good} neutral={neutral} bad={bad}/>
             </div>
         </div>
