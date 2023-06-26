@@ -1,16 +1,22 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
 
-const PersonList = ({personsToShow}) => (
-    <div>
-        <h2>Numbers</h2>
-        {personsToShow.map(person => <Person key={person.id} person={person}/>)}
-    </div>
-)
+const PersonList = ({personsToShow, destroyPerson}) => {
+    return(
+        <div>
+            <h2>Numbers</h2>
+            {personsToShow.map(person => <Person key={person.id} person={person} destroyPerson={destroyPerson}/>)}
+        </div>
+    )
+}
 
-const Person = ({person}) => (
-    <div>{person.name} {person.number}</div>
-)
+const Person = ({person, destroyPerson}) => {
+    return(
+        <div>
+            {person.name} {person.number} <button onClick={() => destroyPerson(person)}>delete</button>
+        </div>
+    )
+}
 
 const SearchFilter = ({search, handleSearchChange}) => (
     <div>
@@ -57,6 +63,17 @@ const App = () => {
         setSearch(event.target.value)
     }
 
+    const handleDestroyPerson = (personToDestroy) => {
+        if(window.confirm(`Delete ${personToDestroy.name}?`)) {
+            personService
+                .destroy(personToDestroy.id)
+                .then((message) => {
+                    console.log(message)
+                    setPersons(persons.filter(person => person.id !== personToDestroy.id))
+                })
+        }
+    }
+
     const addPerson = (event) => {
         event.preventDefault()
         const exists = persons.some( person => person.name === newName.trim() )
@@ -84,7 +101,7 @@ const App = () => {
             <SearchFilter search={search} handleSearchChange={handleSearchChange}/>
             <h2>Add a New Number</h2>
             <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
-            <PersonList personsToShow={persons.filter( person => person.name.toUpperCase().includes(search.trim().toUpperCase()) ) } />
+            <PersonList personsToShow={persons.filter( person => person.name.toUpperCase().includes(search.trim().toUpperCase()) ) } destroyPerson={handleDestroyPerson} />
         </div>
     )
 }
