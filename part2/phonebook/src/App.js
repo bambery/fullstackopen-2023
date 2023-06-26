@@ -1,16 +1,22 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 
-const PersonList = ({personsToShow}) => (
-    <div>
-        <h2>Numbers</h2>
-        {personsToShow.map(person => <Person key={person.id} person={person}/>)}
-    </div>
-)
+const PersonList = ({personsToShow, destroyPerson}) => {
+    return(
+        <div>
+            <h2>Numbers</h2>
+            {personsToShow.map(person => <Person key={person.id} person={person} destroyPerson={destroyPerson}/>)}
+        </div>
+    )
+}
 
-const Person = ({person}) => (
-    <div>{person.name} {person.number}</div>
-)
+const Person = ({person, destroyPerson}) => {
+    return(
+        <div>
+            {person.name} {person.number} <button onClick={() => destroyPerson(person)}>delete</button>
+        </div>
+    )
+}
 
 const SearchFilter = ({search, handleSearchChange}) => (
     <div>
@@ -38,10 +44,10 @@ const App = () => {
     const [search, setSearch] = useState('')
 
     useEffect(() => {
-        axios
-            .get('http://localhost:3001/persons')
-            .then(response => {
-                setPersons(response.data)
+        personService
+            .getAll()
+            .then(initialPersons => {
+                setPersons(initialPersons)
             })
     }, [])
 
@@ -57,21 +63,48 @@ const App = () => {
         setSearch(event.target.value)
     }
 
+    const handleDestroyPerson = (personToDestroy) => {
+        if(window.confirm(`Delete ${personToDestroy.name}?`)) {
+            personService
+                .destroy(personToDestroy.id)
+                .then((message) => {
+                    console.log(message)
+                    setPersons(persons.filter(person => person.id !== personToDestroy.id))
+                })
+        }
+    }
+
     const addPerson = (event) => {
         event.preventDefault()
-        const exists = persons.some( person => person.name === newName.trim() )
-        if(exists){
-            alert(`${newName.trim()} is already added to phonebook`)
-            return
-        }
-        const personObj = {
-            name: newName.trim(),
-            number: newNumber.trim()
-        }
+        const exists = persons.find( person => person.name === newName.trim() )
 
-        setPersons(persons.concat(personObj))
-        setNewName('')
-        setNewNumber('')
+        if(exists){
+            if(window.confirm(`${newName.trim()} is already added to phonebook, replace the old number with a new one?`) ){
+                const personObj = {
+                    ...exists,
+                    number: newNumber
+                }
+                personService
+                    .update(exists.id, personObj)
+                    .then(returnedPerson => {
+                        setPersons(persons.map(person => person.id !== exists.id ? person : returnedPerson))
+                        setNewName('')
+                        setNewNumber('')
+                    })
+            }
+        } else {
+            const personObj = {
+                name: newName.trim(),
+                number: newNumber.trim()
+            }
+                personService
+                    .create(personObj)
+                    .then(returnedPerson => {
+                        setPersons(persons.concat(returnedPerson))
+                        setNewName('')
+                        setNewNumber('')
+                    })
+            }
     }
 
     return (
@@ -80,7 +113,7 @@ const App = () => {
             <SearchFilter search={search} handleSearchChange={handleSearchChange}/>
             <h2>Add a New Number</h2>
             <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
-            <PersonList personsToShow={persons.filter( person => person.name.toUpperCase().includes(search.trim().toUpperCase()) ) } />
+            <PersonList personsToShow={persons.filter( person => person.name.toUpperCase().includes(search.trim().toUpperCase()) ) } destroyPerson={handleDestroyPerson} />
         </div>
     )
 }
