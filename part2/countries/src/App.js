@@ -21,14 +21,17 @@ const CountryDetail = ({ countryData }) => {
     )
 }
 
-const CountryList = ({ countries }) => {
+const CountryList = ({ countries, getCountryData }) => {
     if(countries.length > 10){
         return(<div>Too many matches, specify another filter</div>)
     } else {
         return(
             <ul>
                 {countries.map( countryName =>
-                    <li key={countryName}>{countryName}</li>
+                    <li key={countryName}>
+                        {countryName}
+                        <button onClick={() => getCountryData(countryName)}>show</button>
+                    </li>
                 )}
             </ul>
         )
@@ -59,11 +62,7 @@ function App() {
 
     useEffect( () => {
         if(matchingCountries.length === 1){
-            countryService
-                .getCountry(matchingCountries[0])
-                .then(countryData => {
-                    setCountryDisplayData(countryData)
-                })
+            getCountryData(matchingCountries[0])
         } else {
             setCountryDisplayData(null)
         }
@@ -73,10 +72,18 @@ function App() {
         setSearch(event.target.value)
     }
 
+    const getCountryData = (countryName) => {
+        countryService
+            .getCountry(countryName)
+            .then(countryData => {
+                setCountryDisplayData(countryData)
+            })
+    }
+
     return (
         <div>
             find countries: <input onChange={handleChangeSearch} value={search} />
-            { countryDisplayData ? <CountryDetail countryData={countryDisplayData} /> : <CountryList countries={matchingCountries} /> }
+            { countryDisplayData ? <CountryDetail countryData={countryDisplayData} /> : <CountryList countries={matchingCountries} getCountryData={getCountryData} /> }
         </div>
     )
 }
