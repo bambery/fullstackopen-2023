@@ -45,6 +45,7 @@ const App = () => {
     const [newNumber, setNewNumber] = useState('')
     const [search, setSearch] = useState('')
     const [notification, setNotification] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
 
     useEffect(() => {
         personService
@@ -69,9 +70,16 @@ const App = () => {
     const handleDestroyPerson = (personToDestroy) => {
         if(window.confirm(`Delete ${personToDestroy.name}?`)) {
             personService
-                .destroy(personToDestroy.id)
+                .destroy(personToDestroy)
                 .then((message) => {
                     console.log(message)
+                    setPersons(persons.filter(person => person.id !== personToDestroy.id))
+                })
+                .catch(error => {
+                    setErrorMessage(error.message)
+                    setTimeout(() => {
+                        setErrorMessage(null)
+                    }, 5000)
                     setPersons(persons.filter(person => person.id !== personToDestroy.id))
                 })
         }
@@ -79,24 +87,31 @@ const App = () => {
 
     const addPerson = (event) => {
         event.preventDefault()
-        const exists = persons.find( person => person.name === newName.trim() )
+        const existingPerson = persons.find( person => person.name === newName.trim() )
 
-        if(exists){
+        if(existingPerson){
             if(window.confirm(`${newName.trim()} is already added to phonebook, replace the old number with a new one?`) ){
                 const personObj = {
-                    ...exists,
+                    ...existingPerson,
                     number: newNumber
                 }
                 personService
-                    .update(exists.id, personObj)
+                    .update(existingPerson.id, personObj)
                     .then(returnedPerson => {
                         setNotification(`Updated ${returnedPerson.name}'s number to ${returnedPerson.number}.`)
                         setTimeout(() => {
                             setNotification(null)
                         }, 5000)
-                        setPersons(persons.map(person => person.id !== exists.id ? person : returnedPerson))
+                        setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPerson))
                         setNewName('')
                         setNewNumber('')
+                    })
+                    .catch(error => {
+                        setErrorMessage(error.message)
+                        setTimeout(() => {
+                            setErrorMessage(null)
+                        }, 5000)
+                        setPersons(persons.filter(person => person.id !== existingPerson.id))
                     })
             }
         } else {
@@ -121,7 +136,8 @@ const App = () => {
     return (
         <div>
             <h1>Phonebook</h1>
-            <Notification message={notification}/>
+            <Notification message={notification} notificationClass='notification'/>
+            <Notification message={errorMessage} notificationClass='error' />
             <SearchFilter search={search} handleSearchChange={handleSearchChange}/>
             <h2>Add a New Number</h2>
             <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
