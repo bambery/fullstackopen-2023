@@ -1,22 +1,31 @@
 import countryService from './services/countries'
+import weatherService from './services/weather'
 
 import { useState, useEffect } from 'react'
 
 const CountryDetail = ({ countryData }) => {
     return(
         <div>
-            <h1>{countryData?.name}</h1>
+            <h1>{countryData.name}</h1>
             <div>
-                <div>Capital: {countryData?.capital}</div>
-                <div>Area: {countryData?.area}</div>
+                <div>Capital: {countryData.capital?.name}</div>
+                <div>Area: {countryData.area}</div>
             </div>
             <div>
                 <h2>languages</h2>
                 <ul>
-                    {countryData.languages.map(lang => <li key={lang}>{lang}</li>)}
+                    {countryData.languages?.map(lang => <li key={lang}>{lang}</li>)}
                 </ul>
             </div>
-            <img className='flag' src={countryData.flag}></img>
+            <img className='flag' alt={`flag of ${countryData.name}.`} src={countryData.flag} />
+            <div>
+                <h2>Weather in {countryData.capital?.name}</h2>
+                <div>
+                    <div>Temperature: {countryData.capital?.temp} Celcius</div>
+                    <img alt='icon for current weather' src={`https://openweathermap.org/img/wn/${countryData.capital?.weatherIcon}@2x.png`} />
+                    <div>Wind: {countryData.capital?.wind} m/s</div>
+                </div>
+            </div>
         </div>
     )
 }
@@ -58,7 +67,7 @@ function App() {
         } else {
             setMatchingCountries(countries.filter(country => country.toUpperCase().includes(search.toUpperCase())))
         }
-    }, [search])
+    }, [search, countries])
 
     useEffect( () => {
         if(matchingCountries.length === 1){
@@ -76,7 +85,16 @@ function App() {
         countryService
             .getCountry(countryName)
             .then(countryData => {
-                setCountryDisplayData(countryData)
+                //setCountryDisplayData(countryData)
+                weatherService
+                    .getWeather(countryData.capital.lat, countryData.capital.lon)
+                    .then(weatherData => {
+                        countryData.capital.temp = weatherData.temp
+                        countryData.capital.wind = weatherData.wind
+                        countryData.capital.weatherIcon = weatherData.icon
+                        setCountryDisplayData(countryData)
+                    })
+
             })
     }
 

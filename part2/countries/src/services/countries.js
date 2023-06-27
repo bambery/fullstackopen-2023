@@ -12,7 +12,11 @@ const getCountry = ( countryName ) => {
     return request.then(response => {
         const countryData = {
             name: response.data.name.common,
-            capital: response.data.capital[0],
+            capital: {
+                name: response.data.capital[0],
+                lat: response.data.capitalInfo.latlng[0],
+                lon: response.data.capitalInfo.latlng[1]
+            },
             area: response.data.area,
             languages: Object.values(response.data.languages),
             flag: response.data.flags.svg
