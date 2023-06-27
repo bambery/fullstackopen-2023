@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import Notification from './components/Notification'
+import './index.css'
 
 const PersonList = ({personsToShow, destroyPerson}) => {
     return(
@@ -42,6 +44,7 @@ const App = () => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [search, setSearch] = useState('')
+    const [notification, setNotification] = useState(null)
 
     useEffect(() => {
         personService
@@ -87,6 +90,10 @@ const App = () => {
                 personService
                     .update(exists.id, personObj)
                     .then(returnedPerson => {
+                        setNotification(`Updated ${returnedPerson.name}'s number to ${returnedPerson.number}.`)
+                        setTimeout(() => {
+                            setNotification(null)
+                        }, 5000)
                         setPersons(persons.map(person => person.id !== exists.id ? person : returnedPerson))
                         setNewName('')
                         setNewNumber('')
@@ -100,6 +107,10 @@ const App = () => {
                 personService
                     .create(personObj)
                     .then(returnedPerson => {
+                        setNotification(`Added ${returnedPerson.name}.`)
+                        setTimeout(() => {
+                            setNotification(null)
+                        }, 5000)
                         setPersons(persons.concat(returnedPerson))
                         setNewName('')
                         setNewNumber('')
@@ -110,6 +121,7 @@ const App = () => {
     return (
         <div>
             <h1>Phonebook</h1>
+            <Notification message={notification}/>
             <SearchFilter search={search} handleSearchChange={handleSearchChange}/>
             <h2>Add a New Number</h2>
             <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
