@@ -1,0 +1,18 @@
+# fly.toml app configuration file generated for muddy-moon-3487 on 2023-06-28T16:46:25-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "muddy-moon-3487"
+primary_region = "ord"
+
+[env]
+  PORT = "3000"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
