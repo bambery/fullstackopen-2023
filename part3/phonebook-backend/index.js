@@ -56,9 +56,25 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
+    const body = request.body
+
+    if(!body.name || !body.number){
+        return response.status(400).json({
+            error: 'Missing name or number.'
+        })
+    }
+
+    // checking for person existence is case-insensitive
+    const exists = persons.find(p => p.name.toUpperCase() === body.name.toUpperCase())
+    if(exists){
+        return response.status(400).json({
+            error: `${exists.name} already exists on the server.`
+        })
+    }
+
     const person = {
-        name: request.body.name || 'foo',
-        number: request.body.number || 0,
+        name: request.body.name,
+        number: request.body.number,
         id: generateId()
     }
 
