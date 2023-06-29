@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/persons'
+const baseUrl = '/api/persons'
 
 const getAll = () => {
     const request = axios.get(baseUrl)
@@ -14,7 +14,7 @@ const create = newPerson => {
 const destroy = personToDestroy => {
     const request = axios.delete(`${baseUrl}/${personToDestroy.id}`)
     return request
-        .then(() => `delete ${personToDestroy.id} successful`)
+        .then(() => `delete ${personToDestroy.name} successful`)
         .catch(error => {
             if(error.response.status === 404){
                 throw new Error(`${personToDestroy.name} has already been deleted from the server`)

@@ -72,7 +72,10 @@ const App = () => {
             personService
                 .destroy(personToDestroy)
                 .then((message) => {
-                    console.log(message)
+                    setNotification(message)
+                    setTimeout(() => {
+                        setNotification(null)
+                    }, 5000)
                     setPersons(persons.filter(person => person.id !== personToDestroy.id))
                 })
                 .catch(error => {
