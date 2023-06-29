@@ -46,28 +46,29 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
-    if(!body.name || !body.number){
+    if(!body?.name || !body?.number){
         return response.status(400).json({
             error: 'Missing name or number.'
         })
     }
 
-    // checking for person existence is case-insensitive
-    const exists = persons.find(p => p.name.toUpperCase() === body.name.toUpperCase())
-    if(exists){
-        return response.status(400).json({
-            error: `${exists.name} already exists on the server.`
-        })
-    }
+// skipping for exercise 3.14
+//    // checking for person existence is case-insensitive
+//    const exists = Person.findById.find(p => p.name.toUpperCase() === body.name.toUpperCase())
+//    if(exists){
+//        return response.status(400).json({
+//            error: `${exists.name} already exists on the server.`
+//        })
+//    }
 
-    const person = {
-        name: request.body.name,
-        number: request.body.number,
-        id: generateId()
-    }
+    const person = new Person({
+        name: body.name,
+        number: body.number,
+    })
 
-    persons = persons.concat(person)
-    response.json(person)
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
+    })
 })
 
 const PORT = process.env.PORT
