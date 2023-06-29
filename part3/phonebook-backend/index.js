@@ -52,15 +52,6 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-// skipping for exercise 3.14
-//    // checking for person existence is case-insensitive
-//    const exists = Person.findById.find(p => p.name.toUpperCase() === body.name.toUpperCase())
-//    if(exists){
-//        return response.status(400).json({
-//            error: `${exists.name} already exists on the server.`
-//        })
-//    }
-
     const person = new Person({
         name: body.name,
         number: body.number,
@@ -69,6 +60,21 @@ app.post('/api/persons', (request, response) => {
     person.save().then(savedPerson => {
         response.json(savedPerson)
     })
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+
+    Person.findByIdAndUpdate(request.params.id, person, { new:true })
+        .then(updatedPerson => {
+            response.json(updatedPerson)
+        })
+        .catch(error => next(error))
 })
 
 const errorHandler = (error, request, response, next) => {
