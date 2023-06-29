@@ -11,10 +11,6 @@ morgan.token('postBody', (req, res) => { if (req.method === 'POST'){ return JSON
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postBody'))
 app.use(cors())
 
-const generateId = () => {
-    return Math.floor(Math.random() * 100000000)
-}
-
 app.get('/info', (request, response) => {
     Person.find({}).then(people =>
         response.send(`<div><p>Phonebook has info for ${people.length} people.</p><p>${new Date}</p></div>`)
