@@ -19,6 +19,3 @@ fly.toml
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# we are not deploying the frontend of this project
-/build
