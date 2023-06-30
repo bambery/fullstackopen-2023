@@ -59,12 +59,16 @@ app.put('/api/persons/:id', (request, response, next) => {
         number: body.number
     }
 
+    // findByIdAndUpdate does NOT throw any error at all if it DOESN'T find a document, it just returns null with a status of 200. Unexpected. I'd rather do a find, then update the fields, then a discrete save, but the lesson says to use findByIdAndUpdate so...
     Person.findByIdAndUpdate(
         request.params.id,
         person,
         { new: true, runValidators: true, context: 'query' })
         .then(updatedPerson => {
-            response.json(updatedPerson)
+            if(updatedPerson === null){
+                return response.status(404).json({ error: `${person.name} was already deleted from the server.` })
+            }
+            return response.json(updatedPerson)
         })
         .catch(error => next(error))
 })
@@ -77,7 +81,6 @@ const errorHandler = (error, request, response, next) => {
     } else if (error.name === 'ValidationError') {
         return response.status(400).json({ error: error.message })
     }
-
     next(error)
 }
 

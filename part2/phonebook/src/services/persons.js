@@ -13,24 +13,12 @@ const create = newPerson => {
 
 const destroy = personToDestroy => {
     const request = axios.delete(`${baseUrl}/${personToDestroy.id}`)
-    return request
-        .then(() => `delete ${personToDestroy.name} successful`)
-        .catch(error => {
-            if(error.response.status === 404){
-                throw new Error(`${personToDestroy.name} has already been deleted from the server`)
-            }
-        })
+    return request.then(() => `delete ${personToDestroy.name} successful`)
 }
 
 const update = (id, changedPerson) => {
     const request = axios.put(`${baseUrl}/${id}`, changedPerson)
-    return request
-        .then(response => response.data)
-        .catch(error => {
-            if(error.response.status === 404){
-                throw new Error(`${changedPerson.name} has already been deleted from the server`)
-            }
-        })
+    return request.then(response => response.data)
 }
 
 export default {
