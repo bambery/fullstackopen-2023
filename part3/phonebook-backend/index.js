@@ -7,7 +7,7 @@ const Person = require('./models/person')
 
 app.use(express.static('build'))
 app.use(express.json())
-morgan.token('postBody', (req, res) => { if (req.method === 'POST'){ return JSON.stringify(req.body)}})
+morgan.token('postBody', (req) => { if (req.method === 'POST'){ return JSON.stringify(req.body)}})
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postBody'))
 app.use(cors())
 
@@ -31,29 +31,25 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndRemove(request.params.id)
-        .then(result => {
+        .then(() => {
             response.status(204).end()
         })
         .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
-
-    if(!body?.name || !body?.number){
-        return response.status(400).json({
-            error: 'Missing name or number.'
-        })
-    }
 
     const person = new Person({
         name: body.name,
         number: body.number,
     })
 
-    person.save().then(savedPerson => {
-        response.json(savedPerson)
-    })
+    person.save()
+        .then(savedPerson => {
+            response.json(savedPerson)
+        })
+        .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -64,9 +60,16 @@ app.put('/api/persons/:id', (request, response, next) => {
         number: body.number
     }
 
-    Person.findByIdAndUpdate(request.params.id, person, { new:true })
+    // findByIdAndUpdate does NOT throw any error at all if it DOESN'T find a document, it just returns null with a status of 200. Unexpected. I'd rather do a find, then update the fields, then a discrete save, but the lesson says to use findByIdAndUpdate so...
+    Person.findByIdAndUpdate(
+        request.params.id,
+        person,
+        { new: true, runValidators: true, context: 'query' })
         .then(updatedPerson => {
-            response.json(updatedPerson)
+            if(updatedPerson === null){
+                return response.status(404).json({ error: `${person.name} was already deleted from the server.` })
+            }
+            return response.json(updatedPerson)
         })
         .catch(error => next(error))
 })
@@ -76,8 +79,9 @@ const errorHandler = (error, request, response, next) => {
 
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
     }
-
     next(error)
 }
 

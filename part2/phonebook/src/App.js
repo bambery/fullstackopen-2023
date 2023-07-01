@@ -93,7 +93,7 @@ const App = () => {
         const existingPerson = persons.find( person => person.name === newName.trim() )
 
         if(existingPerson){
-            if(window.confirm(`${newName.trim()} is already added to phonebook, replace the old number with a new one?`) ){
+            if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`) ){
                 const personObj = {
                     ...existingPerson,
                     number: newNumber
@@ -101,7 +101,7 @@ const App = () => {
                 personService
                     .update(existingPerson.id, personObj)
                     .then(returnedPerson => {
-                        setNotification(`Updated ${returnedPerson.name}'s number to ${returnedPerson.number}.`)
+                        setNotification(`Updated ${returnedPerson?.name}'s number to ${returnedPerson?.number}.`)
                         setTimeout(() => {
                             setNotification(null)
                         }, 5000)
@@ -110,11 +110,13 @@ const App = () => {
                         setNewNumber('')
                     })
                     .catch(error => {
-                        setErrorMessage(error.message)
+                        if (error.response.status === 404){
+                            setPersons(persons.filter(person => person.id !== existingPerson.id))
+                        }
+                        setErrorMessage(error.response.data.error)
                         setTimeout(() => {
                             setErrorMessage(null)
                         }, 5000)
-                        setPersons(persons.filter(person => person.id !== existingPerson.id))
                     })
             }
         } else {
@@ -132,6 +134,12 @@ const App = () => {
                         setPersons(persons.concat(returnedPerson))
                         setNewName('')
                         setNewNumber('')
+                    })
+                    .catch(error => {
+                        setErrorMessage(error.response.data.error)
+                        setTimeout(() => {
+                            setErrorMessage(null)
+                        }, 5000)
                     })
             }
     }
