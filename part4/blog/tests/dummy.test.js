@@ -99,6 +99,15 @@ const oneExtraDijkstraBlog = [
     }
 ]
 
+const oneExtraMartinBlog = [
+    {
+        id: '33422bc61b54a676234d1444',
+        title: 'some more likes',
+        author: 'Robert C. Martin',
+        url: 'https://www.anotherfakeblog.com',
+        likes: 5
+    }
+]
 describe('total likes', () => {
 
     test('of empty list is zero', () => {
@@ -150,5 +159,23 @@ describe('most blog posts', () => {
         // I can't really guarantee which person will be returned and am not interested in forcing it
         const authorsWith3Blogs = [{ author: 'Robert C. Martin', blogs: 3 }, { author: 'Edsger W. Dijkstra', blogs: 3 }]
         expect(authorsWith3Blogs).toContainEqual(listHelper.mostBlogs(blogs))
+    })
+})
+
+describe('author with most likes across all blogs', () => {
+    test('when list has one blog, return that author', () => {
+        const blogs = oneExtraDijkstraBlog
+        expect(listHelper.mostLikes(blogs)).toEqual({ author: 'Edsger W. Dijkstra', likes: 3 })
+    })
+
+    test('when list has blogs from many different authors, return the one with most likes', () => {
+        const blogs = premadeBlogs
+        expect(listHelper.mostLikes(blogs)).toEqual({ author: 'Edsger W. Dijkstra', 'likes': 17 })
+    })
+
+    test('when list has two authors with the same number of total likes, return one of them', () => {
+        const blogs = premadeBlogs.concat(oneExtraMartinBlog)
+        const authorsWith17Likes = [{ author: 'Robert C. Martin', likes: 17 }, { author: 'Edsger W. Dijkstra', likes: 17 }]
+        expect(authorsWith17Likes).toContainEqual(listHelper.mostLikes(blogs))
     })
 })
