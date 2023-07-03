@@ -1,4 +1,4 @@
-const dummy = (blogs) => {
+const dummy = () => {
     return 1
 }
 
@@ -17,7 +17,8 @@ const favoriteBlog = blogs => {
             : mostLikedBlog
     }
 
-    return blogs.reduce(reducer)
+    const ans = blogs.reduce(reducer)
+    return { author: ans.author, title: ans.title, likes: ans.likes }
 }
 
 const mostBlogs = blogs => {
