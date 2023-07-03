@@ -1,3 +1,5 @@
+const Blog = require('../models/blog')
+
 const premadeBlogs = [
     {
         id: '5a422a851b54a676234d17f7',
@@ -63,13 +65,14 @@ const oneExtraMartinBlog = [
     }
 ]
 
-const notesInDb = async () => {
-    const notes = await Note.find({})
-    return notes.map(note => note.toJSON())
+const blogsInDb = async () => {
+    const blogs = await Blog.find({})
+    return blogs.map(blog => blog.toJSON())
 }
 
 module.exports = {
     premadeBlogs,
     oneExtraDijkstraBlog,
-    oneExtraMartinBlog
+    oneExtraMartinBlog,
+    blogsInDb
 }
