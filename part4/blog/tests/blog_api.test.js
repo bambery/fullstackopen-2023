@@ -53,6 +53,24 @@ test('a valid blog can be added', async () => {
     expect(allBlogs.map(b => b.likes)).toContain(newBlog.likes)
 })
 
+test('a blog with no likes property will default to 0 likes', async () => {
+    const newBlog = {
+        title: crypto.randomBytes(5).toString('hex'),
+        author: crypto.randomBytes(5).toString('hex'),
+        url: `https://www.${crypto.randomBytes(5).toString('hex')}.com`,
+    }
+
+    const createdBlog = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .then(res => res.body)
+
+    const blogInDb = await Blog.findById(createdBlog.id)
+    console.log('bog in db: ', blogInDb)
+    expect(createdBlog.likes).toEqual(0)
+
+})
+
 afterAll(async () => {
     await mongoose.connection.close()
 })
