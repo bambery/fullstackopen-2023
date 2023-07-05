@@ -21,7 +21,6 @@ test('all blogs are returned', async () => {
         .expect('Content-Type', /application\/json/)
 
     expect(response.body).toHaveLength(helper.premadeBlogs.length)
-
 })
 
 test('blogs are identified with an \'id\' field', async () => {
