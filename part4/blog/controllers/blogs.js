@@ -35,4 +35,24 @@ blogsRouter.delete('/:id', async (request, response) => {
     response.status(204).end()
 })
 
+blogsRouter.put('/:id', async (request, response, next) => {
+    const body = request.body
+
+    //only allowing updating of likes right now
+    const blog = {
+        likes: body.likes,
+    }
+
+    await Blog
+        .findByIdAndUpdate(request.params.id, blog, {new: true, runValidators: true, context: 'query'})
+        .then(updatedBlog => {
+            if(updatedBlog){
+                response.json(updatedBlog)
+            } else {
+                // attempting to update a nonexisting blog will error
+                response.status(404).end()
+            }
+        })
+})
+
 module.exports = blogsRouter

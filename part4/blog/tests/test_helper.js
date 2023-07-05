@@ -1,3 +1,4 @@
+const crypto = require('crypto')
 const Blog = require('../models/blog')
 
 const premadeBlogs = [
@@ -70,9 +71,29 @@ const blogsInDb = async () => {
     return blogs.map(blog => blog.toJSON())
 }
 
+const randomBlogData = () => {
+    return {
+        title: crypto.randomBytes(5).toString('hex'),
+        author: crypto.randomBytes(5).toString('hex'),
+        url: `https://www.${crypto.randomBytes(5).toString('hex')}.com`,
+        likes: Math.floor(Math.random() * 9999)
+    }
+}
+
+const nonExistentId = async () => {
+    const blog = new Blog(randomBlogData())
+
+    await blog.save()
+    await blog.deleteOne()
+
+    return blog._id.toString()
+}
+
 module.exports = {
     premadeBlogs,
     oneExtraDijkstraBlog,
     oneExtraMartinBlog,
-    blogsInDb
+    blogsInDb,
+    nonExistentId,
+    randomBlogData
 }

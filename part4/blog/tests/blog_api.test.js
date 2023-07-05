@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const helper = require('./test_helper')
+const listHelper = require('../utils/list_helper')
 const Blog = require('../models/blog')
 const app = require('../app')
-const crypto = require('crypto')
 
 const api = supertest(app)
 
@@ -33,13 +33,7 @@ test('blogs are identified with an \'id\' field', async () => {
 
 describe('creating blogs', () => {
     test('a valid blog can be added', async () => {
-        const newBlog = {
-            title: crypto.randomBytes(5).toString('hex'),
-            author: crypto.randomBytes(5).toString('hex'),
-            url: `https://www.${crypto.randomBytes(5).toString('hex')}.com`,
-            likes: Math.floor(Math.random() * 9999)
-        }
-
+        const newBlog = helper.randomBlogData()
         await api
             .post('/api/blogs')
             .send(newBlog)
@@ -55,11 +49,8 @@ describe('creating blogs', () => {
     })
 
     test('a blog with no likes property will default to 0 likes', async () => {
-        const newBlog = {
-            title: crypto.randomBytes(5).toString('hex'),
-            author: crypto.randomBytes(5).toString('hex'),
-            url: `https://www.${crypto.randomBytes(5).toString('hex')}.com`,
-        }
+        const newBlog = helper.randomBlogData()
+        delete newBlog.likes
 
         const createdBlog = await api
             .post('/api/blogs')
@@ -72,11 +63,8 @@ describe('creating blogs', () => {
     })
 
     test('a blog missing title will not be created', async () => {
-        const newBlog = {
-            author: crypto.randomBytes(5).toString('hex'),
-            url: `https://www.${crypto.randomBytes(5).toString('hex')}.com`,
-            likes: Math.floor(Math.random() * 9999)
-        }
+        const newBlog = helper.randomBlogData()
+        delete newBlog.title
 
         await api
             .post('/api/blogs')
@@ -88,11 +76,8 @@ describe('creating blogs', () => {
     })
 
     test('a blog missing url will not be created', async () => {
-        const newBlog = {
-            author: crypto.randomBytes(5).toString('hex'),
-            title: crypto.randomBytes(5).toString('hex'),
-            likes: Math.floor(Math.random() * 9999)
-        }
+        const newBlog = helper.randomBlogData()
+        delete newBlog.url
 
         await api
             .post('/api/blogs')
@@ -118,6 +103,124 @@ describe('deleting a blog post', () => {
 
         const blogWasDeleted = blogsAtEnd.find(blog => blog.id === blogToDelete.id)
         expect(blogWasDeleted).toBeUndefined()
+    })
+})
+
+describe('updating a blog entry', () => {
+    test('updating the number of likes on an existing blog post succeeds', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const likesAtStart = listHelper.totalLikes(blogsAtStart)
+        const blogToUpdate = blogsAtStart[0]
+
+        const blogWithMoreLikes = {
+            ...blogToUpdate,
+            likes: blogToUpdate.likes + 1
+        }
+
+        const updatedBlog = await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send(blogWithMoreLikes)
+            .then(res => res.body)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        const likesAtEnd = listHelper.totalLikes(blogsAtEnd)
+        expect(updatedBlog.likes).toEqual(blogToUpdate.likes + 1)
+        expect(likesAtEnd).toEqual(likesAtStart + 1)
+    })
+
+    test('updating the number of likes on a non-existent (and incorrectly formatted) id fails with 400', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const likesAtStart = listHelper.totalLikes(blogsAtStart)
+        const blogToUpdate = blogsAtStart[0]
+
+        const blogWithMoreLikes = {
+            ...blogToUpdate,
+            likes: blogToUpdate.likes + 1
+        }
+
+        await api
+            .put('/api/blogs/222222')
+            .send(blogWithMoreLikes)
+            .expect(400)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        const likesAtEnd = listHelper.totalLikes(blogsAtEnd)
+        expect(likesAtEnd).toEqual(likesAtStart)
+    })
+
+    test('updating the number of likes on a non-existent (but properly formatted) id fails with 404', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const likesAtStart = listHelper.totalLikes(blogsAtStart)
+        const blogToUpdate = blogsAtStart[0]
+        const fakeId = await helper.nonExistentId()
+
+        const blogWithMoreLikes = {
+            ...blogToUpdate,
+            likes: blogToUpdate.likes + 1
+        }
+
+        await api
+            .put(`/api/blogs/${fakeId}`)
+            .send(blogWithMoreLikes)
+            .expect(404)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        const likesAtEnd = listHelper.totalLikes(blogsAtEnd)
+        expect(likesAtEnd).toEqual(likesAtStart)
+    })
+
+    test('cannot update title', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToUpdate = blogsAtStart[0]
+
+        const blogWithNewTitle = {
+            ...blogToUpdate,
+            title: 'My cool new title'
+        }
+
+        const updatedBlog = await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send(blogWithNewTitle)
+            .then(res => res.body)
+
+        expect(updatedBlog.title).not.toEqual(blogWithNewTitle.title)
+        expect(updatedBlog.title).toEqual(blogToUpdate.title)
+    })
+
+    test('cannot update author', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToUpdate = blogsAtStart[0]
+
+        const blogWithNewAuthor = {
+            ...blogToUpdate,
+            author: 'A different author'
+        }
+
+        const updatedBlog = await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send(blogWithNewAuthor)
+            .then(res => res.body)
+
+        expect(updatedBlog.author).not.toEqual(blogWithNewAuthor.author)
+        expect(updatedBlog.author).toEqual(blogToUpdate.author)
+    })
+
+    test('cannot update url', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToUpdate = blogsAtStart[0]
+
+        const blogWithNewUrl = {
+            ...blogToUpdate,
+            url: 'https://www.cats.com'
+        }
+
+        const updatedBlog = await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send(blogWithNewUrl)
+            .then(res => res.body)
+
+        expect(updatedBlog.url).not.toEqual(blogWithNewUrl.url)
+        expect(updatedBlog.url).toEqual(blogToUpdate.url)
     })
 })
 
