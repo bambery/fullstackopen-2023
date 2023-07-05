@@ -31,44 +31,77 @@ test('blogs are identified with an \'id\' field', async () => {
     expect(blogs[0].id).toBeDefined()
 })
 
-test('a valid blog can be added', async () => {
-    const newBlog = {
-        title: crypto.randomBytes(5).toString('hex'),
-        author: crypto.randomBytes(5).toString('hex'),
-        url: `https://www.${crypto.randomBytes(5).toString('hex')}.com`,
-        likes: Math.floor(Math.random() * 9999)
-    }
+describe('creating blogs', () => {
+    test('a valid blog can be added', async () => {
+        const newBlog = {
+            title: crypto.randomBytes(5).toString('hex'),
+            author: crypto.randomBytes(5).toString('hex'),
+            url: `https://www.${crypto.randomBytes(5).toString('hex')}.com`,
+            likes: Math.floor(Math.random() * 9999)
+        }
 
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
 
-    const allBlogs = await helper.blogsInDb()
-    expect(allBlogs).toHaveLength(helper.premadeBlogs.length + 1)
-    expect(allBlogs.map(b => b.title)).toContain(newBlog.title)
-    expect(allBlogs.map(b => b.author)).toContain(newBlog.author)
-    expect(allBlogs.map(b => b.url)).toContain(newBlog.url)
-    expect(allBlogs.map(b => b.likes)).toContain(newBlog.likes)
-})
+        const allBlogs = await helper.blogsInDb()
+        expect(allBlogs).toHaveLength(helper.premadeBlogs.length + 1)
+        expect(allBlogs.map(b => b.title)).toContain(newBlog.title)
+        expect(allBlogs.map(b => b.author)).toContain(newBlog.author)
+        expect(allBlogs.map(b => b.url)).toContain(newBlog.url)
+        expect(allBlogs.map(b => b.likes)).toContain(newBlog.likes)
+    })
 
-test('a blog with no likes property will default to 0 likes', async () => {
-    const newBlog = {
-        title: crypto.randomBytes(5).toString('hex'),
-        author: crypto.randomBytes(5).toString('hex'),
-        url: `https://www.${crypto.randomBytes(5).toString('hex')}.com`,
-    }
+    test('a blog with no likes property will default to 0 likes', async () => {
+        const newBlog = {
+            title: crypto.randomBytes(5).toString('hex'),
+            author: crypto.randomBytes(5).toString('hex'),
+            url: `https://www.${crypto.randomBytes(5).toString('hex')}.com`,
+        }
 
-    const createdBlog = await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .then(res => res.body)
+        const createdBlog = await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .then(res => res.body)
 
-    const blogInDb = await Blog.findById(createdBlog.id)
-    console.log('bog in db: ', blogInDb)
-    expect(createdBlog.likes).toEqual(0)
+        expect(createdBlog.likes).toEqual(0)
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd).toHaveLength(helper.premadeBlogs.length + 1)
+    })
 
+    test('a blog missing title will not be created', async () => {
+        const newBlog = {
+            author: crypto.randomBytes(5).toString('hex'),
+            url: `https://www.${crypto.randomBytes(5).toString('hex')}.com`,
+            likes: Math.floor(Math.random() * 9999)
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(400)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd).toHaveLength(helper.premadeBlogs.length)
+    })
+
+    test('a blog missing url will not be created', async () => {
+        const newBlog = {
+            author: crypto.randomBytes(5).toString('hex'),
+            title: crypto.randomBytes(5).toString('hex'),
+            likes: Math.floor(Math.random() * 9999)
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(400)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd).toHaveLength(helper.premadeBlogs.length)
+    })
 })
 
 afterAll(async () => {
