@@ -1,5 +1,6 @@
 const crypto = require('crypto')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const premadeBlogs = [
     {
@@ -66,9 +67,32 @@ const oneExtraMartinBlog = [
     }
 ]
 
+const premadeUsers = [
+    {
+        name: 'Adelaide Anderson',
+        username: 'aanderson',
+        password: 'a great password'
+    },
+    {
+        name: 'Benny Bradcock',
+        username: 'bbradcock',
+        password: 'another incredible password'
+    },
+    {
+        name: 'Catherine Chowdry',
+        username: 'cchowdry',
+        password: 'again, another stunning phrase'
+    }
+]
+
 const blogsInDb = async () => {
     const blogs = await Blog.find({})
     return blogs.map(blog => blog.toJSON())
+}
+
+const usersInDb = async () => {
+    const users = await User.find({})
+    return users.map(user => user.toJSON())
 }
 
 const randomBlogData = () => {
@@ -91,9 +115,11 @@ const nonExistentId = async () => {
 
 module.exports = {
     premadeBlogs,
+    premadeUsers,
     oneExtraDijkstraBlog,
     oneExtraMartinBlog,
     blogsInDb,
+    usersInDb,
     nonExistentId,
     randomBlogData
 }
