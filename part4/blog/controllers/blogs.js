@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken')
+const middleware = require('../utils/middleware')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
@@ -20,14 +20,9 @@ blogsRouter.get('/', async (request, response) => {
 //    }
 //}
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     const body = request.body
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if(!decodedToken.id) {
-        return response.status(401).json({ error: 'token invalid' })
-    }
-
-    const user = await User.findById(decodedToken.id)
+    const user = request.user
 
     const blog = new Blog({
         title: body.title,
@@ -44,23 +39,24 @@ blogsRouter.post('/', async (request, response) => {
     response.status(201).json(savedBlog)
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
+    const user = request.user
     const blog = await Blog.findById(request.params.id)
 
-    if (!decodedToken.id) {
+    if (!user._id) {
         return response.status(401).json({ error: 'token invalid' })
     } else if (!blog) {
         // if the blog does not exist, we are fine
         return response.status(204).end()
-    } else if (blog.user.toString() !== decodedToken.id) {
+    } else if (blog.user.toString() !== user._id.toString()) {
+        console.log(blog.user.toString())
+        console.log(user._id)
         return response.status(403).json({ error: 'user does not have authorization to delete this blog' })
     }
 
     await Blog.findByIdAndRemove(request.params.id)
 
     // remove the association with the deleted blog on the user. Mongoose will ignore any non-existing ids when populating refs, but the ids will still exist on the user object.
-    const user = await User.findById(decodedToken.id)
     user.blogs = user.blogs.filter(b => {
         return b.toString() !== request.params.id
     })
