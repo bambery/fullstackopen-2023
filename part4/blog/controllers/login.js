@@ -22,12 +22,13 @@ loginRouter.post('/', async (request, response) => {
         id: user._id,
     }
 
-    // token expires in one hour
+    // token expires in one hour, but only in prod
+    const tokenExpires = process.env.NODE_ENV === 'production' ? { expiresIn: 60*60 } : null
 
     const token = jwt.sign(
         userForToken,
         process.env.SECRET,
-        { expiresIn: 60*60 }
+        tokenExpires
     )
 
     response
