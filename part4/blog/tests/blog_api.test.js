@@ -10,7 +10,7 @@ const api = supertest(app)
 beforeEach(async () => {
     await Blog.deleteMany({})
     let blogObjects = helper.premadeBlogs.map(n => new Blog(n))
-    const promiseArray = blogObjects.map( b => b.save())
+    const promiseArray = blogObjects.map(b => b.save())
     await Promise.all(promiseArray)
 })
 
@@ -31,7 +31,7 @@ test('blogs are identified with an \'id\' field', async () => {
 })
 
 describe('creating blogs', () => {
-    test('a valid blog can be added', async () => {
+    test.only('a valid blog can be added', async () => {
         const newBlog = helper.randomBlogData()
         await api
             .post('/api/blogs')
