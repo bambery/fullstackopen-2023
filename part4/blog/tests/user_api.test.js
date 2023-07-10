@@ -28,7 +28,7 @@ test('fetching all users returns all users', async () => {
     expect(response.body).toHaveLength(2)
 })
 
-describe('creating blog entries', () => {
+describe('creating new users', () => {
     describe('when there is initially one user in the db', () => {
         beforeEach(async () => {
             await User.deleteMany({})
