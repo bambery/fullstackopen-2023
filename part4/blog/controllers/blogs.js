@@ -1,7 +1,6 @@
 const middleware = require('../utils/middleware')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
 
 blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog
@@ -49,8 +48,6 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
         // if the blog does not exist, we are fine
         return response.status(204).end()
     } else if (blog.user.toString() !== user._id.toString()) {
-        console.log(blog.user.toString())
-        console.log(user._id)
         return response.status(403).json({ error: 'user does not have authorization to delete this blog' })
     }
 
@@ -65,22 +62,28 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
     response.status(204).end()
 })
 
-blogsRouter.put('/:id', async (request, response) => {
+blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
     const body = request.body
+    const user = request.user
+    const blog = await Blog.findById(request.params.id)
 
-    //only allowing updating of likes right now
-    const blog = {
-        likes: body.likes,
+    if (!user?._id) {
+        return response.status(401).json({ error: 'token invalid' })
+    } else if (!blog) {
+        // if the blog does not exist, error
+        return response.status(404).end()
+    } else if (blog.user.toString() !== user._id.toString()) {
+        return response.status(403).json({ error: 'user does not have authorization to delete this blog' })
     }
 
-    await Blog
-        .findByIdAndUpdate(request.params.id, blog, { new: true, runValidators: true, context: 'query' })
+    //only allowing updating of likes right now
+    blog.likes = body.likes
+
+    // since we already fetched the Blog document to confirm the "updating user" is the same as the "creating user", I do not need to run a findByIdAndUpdate, I can just run save() on the document and it will run validations
+    await blog.save()
         .then(updatedBlog => {
             if(updatedBlog){
                 response.json(updatedBlog)
-            } else {
-                // attempting to update a nonexisting blog will error
-                response.status(404).end()
             }
         })
 })

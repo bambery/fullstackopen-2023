@@ -78,11 +78,6 @@ const premadeUsers = [
         username: 'bbradcock',
         password: 'another incredible password'
     },
-    {
-        name: 'Catherine Chowdry',
-        username: 'cchowdry',
-        password: 'again, another stunning phrase'
-    }
 ]
 
 const blogsInDb = async () => {
@@ -121,5 +116,5 @@ module.exports = {
     blogsInDb,
     usersInDb,
     nonExistentId,
-    randomBlogData
+    randomBlogData,
 }
