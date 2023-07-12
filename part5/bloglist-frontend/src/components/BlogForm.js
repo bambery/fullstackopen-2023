@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import blogService from '../services/blogs'
 
-const BlogForm = ({ blogs, setBlogs, setErrorMessage }) => {
+const BlogForm = ({ blogs, setBlogs, setNotificationMessage, setErrorMessage }) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
@@ -14,7 +14,13 @@ const BlogForm = ({ blogs, setBlogs, setErrorMessage }) => {
             })
             const newBlogs = blogs.concat(newBlog)
             setBlogs(newBlogs)
-            // success message goes here
+            setNotificationMessage(`New blog: "${newBlog.title}" by ${newBlog.author} added`)
+            setTimeout(() => {
+                setNotificationMessage(null)
+            }, 5000)
+            setTitle('')
+            setAuthor('')
+            setUrl('')
         } catch (exception) {
             setErrorMessage(exception)
             setTimeout(() => {

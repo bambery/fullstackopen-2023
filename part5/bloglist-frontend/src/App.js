@@ -12,6 +12,7 @@ const App = () => {
     const [password, setPassword] = useState('')
     const [user, setUser] = useState(null)
     const [errorMessage, setErrorMessage] = useState(null)
+    const [notificationMessage, setNotificationMessage] = useState(null)
 
     useEffect(() => {
         blogService.getAll().then(blogs =>
@@ -42,7 +43,7 @@ const App = () => {
             setUsername('')
             setPassword('')
         } catch (exception) {
-            setErrorMessage('Wrong Credentials')
+            setErrorMessage('Wrong username or password')
             setTimeout(() => {
                 setErrorMessage(null)
             }, 5000)
@@ -50,6 +51,10 @@ const App = () => {
     }
 
     const handleLogOut = () => {
+        setNotificationMessage(`${user.name} has logged out`)
+        setTimeout(() => {
+            setNotificationMessage(null)
+        }, 5000)
         setUser(null)
         blogService.setToken(null)
         window.localStorage.removeItem('loggedBlogappUser')
@@ -57,12 +62,25 @@ const App = () => {
 
     return (
         <div>
-            <Notification message={errorMessage} />
-            {user === null && <LoginForm handleLogin={handleLogin} username={username} setUsername={setUsername} password={password} setPassword={setPassword} />}
+            {user === null && <h1>Log in to application</h1>}
+            {user !== null && <h1>Blogs</h1>}
+            <Notification message={errorMessage} type='error'/>
+            <Notification message={notificationMessage} type='info'/>
+            {user === null && <LoginForm
+                handleLogin={handleLogin}
+                username={username}
+                setUsername={setUsername}
+                password={password}
+                setPassword={setPassword}
+            />}
             {user !== null && <div>
-                <BlogForm blogs={blogs} setBlogs={setBlogs} setErrorMessage={setErrorMessage} />
-                <h1>blogs</h1>
                 <p>{user.name} is logged in <button onClick={handleLogOut}>logout</button></p>
+                <BlogForm
+                    blogs={blogs}
+                    setBlogs={setBlogs}
+                    setErrorMessage={setErrorMessage}
+                    setNotificationMessage={setNotificationMessage}
+                />
                 {blogs.map(blog =>
                 <Blog key={blog.id} blog={blog} />)}
             </div> }
