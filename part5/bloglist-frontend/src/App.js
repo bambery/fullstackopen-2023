@@ -4,6 +4,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
     const [blogs, setBlogs] = useState([])
@@ -23,7 +24,7 @@ const App = () => {
         if (loggedUserJSON) {
             const user = JSON.parse(loggedUserJSON)
             setUser(user)
-            // blogService.setToken(user.token)
+            blogService.setToken(user.token)
         }
     }, [])
 
@@ -50,6 +51,7 @@ const App = () => {
 
     const handleLogOut = () => {
         setUser(null)
+        blogService.setToken(null)
         window.localStorage.removeItem('loggedBlogappUser')
     }
 
@@ -58,6 +60,7 @@ const App = () => {
             <Notification message={errorMessage} />
             {user === null && <LoginForm handleLogin={handleLogin} username={username} setUsername={setUsername} password={password} setPassword={setPassword} />}
             {user !== null && <div>
+                <BlogForm blogs={blogs} setBlogs={setBlogs} setErrorMessage={setErrorMessage} />
                 <h1>blogs</h1>
                 <p>{user.name} is logged in <button onClick={handleLogOut}>logout</button></p>
                 {blogs.map(blog =>
