@@ -78,28 +78,32 @@ const App = () => {
     }
 
     return (
-        <div>
-            {!user && <h1>Log in to application</h1>}
-            {user && <h1>Blogs</h1>}
-            <Notification message={errorMessage} type='error'/>
-            <Notification message={notificationMessage} type='info'/>
-            {!user &&
-                <Toggleable buttonLabel='login'>
-                    <LoginForm
-                    handleLogin={handleLogin}
-                    />
-                </Toggleable>
-            }
-            {user && <div>
-                <p>{user.name} is logged in <button onClick={handleLogOut}>logout</button></p>
-                <Toggleable buttonLabel='new blog' ref={blogFormRef}>
-                    <BlogForm
-                        handleNewBlog={handleNewBlog}
-                    />
-                </Toggleable>
-                {blogs.map(blog =>
-                <Blog key={blog.id} blog={blog} />)}
-            </div> }
+        <div className='centering-div'>
+            <div className='main-container'>
+                {!user && <h1>Log in to application</h1>}
+                {user && <h1>Blogs</h1>}
+                <Notification message={errorMessage} type='error'/>
+                <Notification message={notificationMessage} type='info'/>
+                {!user &&
+                    <Toggleable buttonLabel='login'>
+                        <LoginForm
+                        handleLogin={handleLogin}
+                        />
+                    </Toggleable>
+                }
+                {user && <div>
+                    <p>{user.name} is logged in <button onClick={handleLogOut}>logout</button></p>
+                    <Toggleable buttonLabel='new blog' ref={blogFormRef}>
+                        <BlogForm
+                            handleNewBlog={handleNewBlog}
+                        />
+                    </Toggleable>
+                    <div class='blog-list'>
+                        {blogs.map(blog =>
+                        <Blog key={blog.id} blog={blog} />)}
+                    </div>
+                </div> }
+            </div>
         </div>
     )
 }

@@ -14,3 +14,17 @@
 .info {
     color: green;
 }
+
+.blog-list {
+    margin-top: 10px;
+}
+
+.main-container {
+    width: 800px;
+}
+
+.centering-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
