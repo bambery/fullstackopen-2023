@@ -81,11 +81,7 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
 
     // since we already fetched the Blog document to confirm the "updating user" is the same as the "creating user", I do not need to run a findByIdAndUpdate, I can just run save() on the document and it will run validations
     await blog.save()
-        .then(updatedBlog => {
-            if(updatedBlog){
-                response.json(updatedBlog)
-            }
-        })
+    response.status(200).json(blog)
 })
 
 module.exports = blogsRouter
