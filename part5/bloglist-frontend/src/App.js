@@ -9,7 +9,6 @@ import Toggleable from './components/Toggleable'
 
 const App = () => {
     const [blogs, setBlogs] = useState([])
-    const [loginVisible, setLoginVisible] = useState(false)
     const [user, setUser] = useState(null)
     const [errorMessage, setErrorMessage] = useState(null)
     const [notificationMessage, setNotificationMessage] = useState(null)
@@ -39,6 +38,7 @@ const App = () => {
                 'loggedBlogappUser', JSON.stringify(user)
             )
             setUser(user)
+            blogService.setToken(user.token)
         } catch (exception) {
             setErrorMessage('Wrong username or password')
             setTimeout(() => {
@@ -77,6 +77,26 @@ const App = () => {
         }
     }
 
+    // used for dev db setup *************************
+    const populateBlogs = async () => {
+        try {
+            const fetchedBlogs = await blogService.createAllDummies()
+            setBlogs(blogs.concat(fetchedBlogs))
+        } catch (exception) {
+            setErrorMessage(exception)
+        }
+    }
+
+    const deleteAllUserBlogs = async () => {
+        try {
+            await blogService.dropBlogDb()
+            setBlogs(blogs.filter(blog => blog.user.username !== user.username))
+        } catch (exception) {
+            setErrorMessage(exception)
+        }
+    }
+    //***********************************************
+
     return (
         <div className='centering-div'>
             <div className='main-container'>
@@ -98,10 +118,18 @@ const App = () => {
                             handleNewBlog={handleNewBlog}
                         />
                     </Toggleable>
-                    <div class='blog-list'>
+                    <div className='blog-list'>
                         {blogs.map(blog =>
                         <Blog key={blog.id} blog={blog} />)}
                     </div>
+                    { /* used for dev db setuep> */}
+                    {process.env.NODE_ENV === 'development' &&
+                    <div className='button-populate-db'>
+                        <button onClick={populateBlogs}>populate test</button>
+                        <button onClick={deleteAllUserBlogs}>drop blog db</button>
+                    </div>
+                    }
+                    { /* ************************ */}
                 </div> }
             </div>
         </div>

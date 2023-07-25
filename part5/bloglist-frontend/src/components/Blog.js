@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const Blog = ({blog}) => {
-    const [showDetails, setShowDetails] = useState(false)
+    const [showDetails, setShowDetails] = useState(true)
 
     const showBlogDetails = { display: showDetails ? '' : 'none' }
 
@@ -17,7 +17,7 @@ const Blog = ({blog}) => {
         <div style={blogStyle}>
             <div>
                 {blog.title} by {blog.author}
-                <button onClick = {() => setShowDetails(!showDetails)}>{showDetails ? 'view' : 'hide'}</button>
+                <button onClick = {() => setShowDetails(!showDetails)}>{showDetails ? 'hide' : 'view'}</button>
                 <div style={showBlogDetails}>
                     <div>
                         {blog.url}
