@@ -30,6 +30,14 @@ const update = async (updatedObj) => {
     return response.data
 }
 
+const remove = async blogId => {
+    const config = {
+        headers: { Authorization: token }
+    }
+
+    await axios.delete(`${baseUrl}/${blogId}`, config)
+}
+
 //******************************************************
 // used for dev db setup
 const createDummy = async newObject => {
@@ -52,7 +60,7 @@ const createAllDummies = async () => {
 }
 
 // used for dev db setup
-const dropBlogDb = async () => {
+const deleteAllUserBlogs = async () => {
     const config = {
         headers: { Authorization: token }
     }
@@ -102,4 +110,4 @@ const dummyBlogs = [
 //******************************************************
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default process.env.NODE_ENV === 'development' ? { getAll, create, update, setToken, createAllDummies, dropBlogDb } : { getAll, create, update, setToken }
+export default process.env.NODE_ENV === 'development' ? { getAll, create, update, remove, setToken, createAllDummies, deleteAllUserBlogs } : { getAll, create, update, remove, setToken }

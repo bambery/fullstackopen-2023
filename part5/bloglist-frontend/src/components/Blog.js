@@ -1,9 +1,11 @@
 import { useState } from 'react'
 
-const Blog = ({blog, updateBlog}) => {
+const Blog = ({blog, handleUpdateBlog, handleDeleteBlog}) => {
     const [showDetails, setShowDetails] = useState(true)
 
     const showBlogDetails = { display: showDetails ? '' : 'none' }
+
+    const isBlogCreator = blog.user.username === JSON.parse(window.localStorage.getItem('loggedBlogappUser')).username
 
     const blogStyle = {
         padding: '5px',
@@ -13,14 +15,19 @@ const Blog = ({blog, updateBlog}) => {
         marginBottom: 5
     }
 
-    const incrementLikes = (event) => {
-        event.preventDefault()
+    const incrementLikes = () => {
         const updatedBlog = {
             ...blog,
             likes: blog.likes + 1
         }
 
-        updateBlog(updatedBlog)
+        handleUpdateBlog(updatedBlog)
+    }
+
+    const deleteBlog = () => {
+        if (window.confirm(`Remove blog: \"${blog.title}\" by ${blog.author}?`)){
+            handleDeleteBlog(blog.id)
+        }
     }
 
     return (
@@ -39,6 +46,7 @@ const Blog = ({blog, updateBlog}) => {
                     <div>
                         {blog.user.name}
                     </div>
+                    {isBlogCreator && <button onClick={deleteBlog} >remove</button>}
                 </div>
             </div>
         </div>

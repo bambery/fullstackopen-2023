@@ -77,13 +77,26 @@ const App = () => {
         }
     }
 
-    const updateBlog = async (blogObj) => {
+    const handleUpdateBlog = async (blogObj) => {
         try {
             const updatedBlog = await blogService.update(blogObj)
             const updatedBlogList = blogs.map(b => b.id === blogObj.id ? updatedBlog : b)
             setBlogs(updatedBlogList)
             // do I want to post a notificaton for updating likes? Not really....
         } catch (exception) {
+            setErrorMessage(exception.response.data.error)
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 5000)
+        }
+    }
+
+    const handleDeleteBlog = async(blogId) => {
+        try {
+            await blogService.remove(blogId)
+            setBlogs(blogs.filter(blog => blog.id !== blogId))
+        } catch (exception) {
+            console.log(exception)
             setErrorMessage(exception.response.data.error)
             setTimeout(() => {
                 setErrorMessage(null)
@@ -103,7 +116,7 @@ const App = () => {
 
     const deleteAllUserBlogs = async () => {
         try {
-            await blogService.dropBlogDb()
+            await blogService.deleteAllUserBlogs()
             setBlogs(blogs.filter(blog => blog.user.username !== user.username))
         } catch (exception) {
             setErrorMessage(exception)
@@ -136,7 +149,7 @@ const App = () => {
                         {blogs
                             .sort((a, b) => b.likes - a.likes)
                             .map(blog =>
-                        <Blog key={blog.id} blog={blog} updateBlog={updateBlog}/>)}
+                        <Blog key={blog.id} blog={blog} handleUpdateBlog={handleUpdateBlog} handleDeleteBlog={handleDeleteBlog} />)}
                     </div>
                     { /* used for dev db setuep> *******************/}
                     {process.env.NODE_ENV === 'development' &&
