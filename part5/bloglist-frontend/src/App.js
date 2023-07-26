@@ -77,6 +77,20 @@ const App = () => {
         }
     }
 
+    const updateBlog = async (blogObj) => {
+        try {
+            const updatedBlog = await blogService.update(blogObj)
+            const updatedBlogList = blogs.map(b => b.id === blogObj.id ? updatedBlog : b)
+            setBlogs(updatedBlogList)
+            // do I want to post a notificaton for updating likes? Not really....
+        } catch (exception) {
+            setErrorMessage(exception.response.data.error)
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 5000)
+        }
+    }
+
     // used for dev db setup *************************
     const populateBlogs = async () => {
         try {
@@ -120,16 +134,16 @@ const App = () => {
                     </Toggleable>
                     <div className='blog-list'>
                         {blogs.map(blog =>
-                        <Blog key={blog.id} blog={blog} />)}
+                        <Blog key={blog.id} blog={blog} updateBlog={updateBlog}/>)}
                     </div>
-                    { /* used for dev db setuep> */}
+                    { /* used for dev db setuep> *******************/}
                     {process.env.NODE_ENV === 'development' &&
                     <div className='button-populate-db'>
                         <button onClick={populateBlogs}>populate test</button>
                         <button onClick={deleteAllUserBlogs}>drop blog db</button>
                     </div>
                     }
-                    { /* ************************ */}
+                    { /* ***************************************** */}
                 </div> }
             </div>
         </div>

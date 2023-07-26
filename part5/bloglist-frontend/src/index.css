@@ -34,3 +34,7 @@
     flex-direction: row;
     justify-content: space-around;
 }
+
+.inline-right-button {
+    margin-left: 5px;
+}

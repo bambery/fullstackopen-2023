@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({blog}) => {
+const Blog = ({blog, updateBlog}) => {
     const [showDetails, setShowDetails] = useState(true)
 
     const showBlogDetails = { display: showDetails ? '' : 'none' }
@@ -13,18 +13,28 @@ const Blog = ({blog}) => {
         marginBottom: 5
     }
 
+    const incrementLikes = (event) => {
+        event.preventDefault()
+        const updatedBlog = {
+            ...blog,
+            likes: blog.likes + 1
+        }
+
+        updateBlog(updatedBlog)
+    }
+
     return (
         <div style={blogStyle}>
             <div>
                 {blog.title} by {blog.author}
-                <button onClick = {() => setShowDetails(!showDetails)}>{showDetails ? 'hide' : 'view'}</button>
+                <button className='inline-right-button' onClick = {() => setShowDetails(!showDetails)}>{showDetails ? 'hide' : 'view'}</button>
                 <div style={showBlogDetails}>
                     <div>
                         {blog.url}
                     </div>
                     <div>
                         likes: {blog.likes}
-                        <button>like</button>
+                        <button className='inline-right-button' onClick={incrementLikes}>like</button>
                     </div>
                     <div>
                         {blog.user.name}
