@@ -90,7 +90,7 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
     //only allowing updating of likes right now
     blog.likes = body.likes
 
-    // since we already fetched the Blog document to confirm the "updating user" is the same as the "creating user", I do not need to run a findByIdAndUpdate, I can just run save() on the document and it will run validations
+    // since we already fetched the Blog document to confirm it exists, I do not need to run a findByIdAndUpdate, I can just run save() on the document and it will run validations
     const updatedBlog = await blog.save()
     await updatedBlog.populate('user', { username: 1, name: 1 })
     response.status(201).json(updatedBlog)
