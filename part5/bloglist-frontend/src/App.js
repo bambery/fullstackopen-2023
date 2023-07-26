@@ -134,7 +134,7 @@ const App = () => {
                 {!user &&
                     <Toggleable buttonLabel='login'>
                         <LoginForm
-                        handleLogin={handleLogin}
+                            handleLogin={handleLogin}
                         />
                     </Toggleable>
                 }
@@ -149,7 +149,7 @@ const App = () => {
                         {blogs
                             .sort((a, b) => b.likes - a.likes)
                             .map(blog =>
-                        <Blog key={blog.id} blog={blog} handleUpdateBlog={handleUpdateBlog} handleDeleteBlog={handleDeleteBlog} />)}
+                                <Blog key={blog.id} blog={blog} handleUpdateBlog={handleUpdateBlog} handleDeleteBlog={handleDeleteBlog} />)}
                     </div>
                     { /* used for dev db setuep> *******************/}
                     {process.env.NODE_ENV === 'development' &&
