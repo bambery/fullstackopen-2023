@@ -14,3 +14,27 @@
 .info {
     color: green;
 }
+
+.blog-list {
+    margin-top: 10px;
+}
+
+.main-container {
+    width: 800px;
+}
+
+.centering-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.populate-db {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.inline-right-button {
+    margin-left: 5px;
+}
