@@ -1,11 +1,9 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog }) => {
-    const [showDetails, setShowDetails] = useState(true)
+const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog, userIsAuthor }) => {
+    const [showDetails, setShowDetails] = useState(false)
 
     const showBlogDetails = { display: showDetails ? '' : 'none' }
-
-    const isBlogCreator = blog.user.username === JSON.parse(window.localStorage.getItem('loggedBlogappUser')).username
 
     const blogStyle = {
         padding: '5px',
@@ -46,7 +44,7 @@ const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog }) => {
                     <div>
                         {blog.user.name}
                     </div>
-                    {isBlogCreator && <button onClick={deleteBlog} >remove</button>}
+                    {userIsAuthor && <button onClick={deleteBlog} >remove</button>}
                 </div>
             </div>
         </div>

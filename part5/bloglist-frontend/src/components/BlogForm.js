@@ -27,7 +27,7 @@ const BlogForm = ({ handleNewBlog }) => {
                     <input
                         type='text'
                         value={title}
-                        name='Title'
+                        aria-label='title'
                         onChange={({ target }) => setTitle(target.value)} />
                 </div>
                 <div>
@@ -35,7 +35,7 @@ const BlogForm = ({ handleNewBlog }) => {
                     <input
                         type='text'
                         value={author}
-                        name='Author'
+                        aria-label='author'
                         onChange={({ target }) => setAuthor(target.value)} />
                 </div>
                 <div>
@@ -43,7 +43,7 @@ const BlogForm = ({ handleNewBlog }) => {
                     <input
                         type='text'
                         value={url}
-                        name='Url'
+                        aria-label='url'
                         onChange={({ target }) => setUrl(target.value)} />
                 </div>
                 <button type='submit'>create</button>

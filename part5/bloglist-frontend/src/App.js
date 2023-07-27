@@ -149,13 +149,19 @@ const App = () => {
                         {blogs
                             .sort((a, b) => b.likes - a.likes)
                             .map(blog =>
-                                <Blog key={blog.id} blog={blog} handleUpdateBlog={handleUpdateBlog} handleDeleteBlog={handleDeleteBlog} />)}
+                                <Blog
+                                    key={blog.id}
+                                    blog={blog}
+                                    handleUpdateBlog={handleUpdateBlog}
+                                    handleDeleteBlog={handleDeleteBlog}
+                                    userIsAuthor={blog.user.username === user.username}
+                                />)}
                     </div>
                     { /* used for dev db setuep> *******************/}
                     {process.env.NODE_ENV === 'development' &&
                     <div className='button-populate-db'>
                         <button onClick={populateBlogs}>populate test</button>
-                        <button onClick={deleteAllUserBlogs}>drop blog db</button>
+                        <button onClick={deleteAllUserBlogs}>drop user blogs</button>
                     </div>
                     }
                     { /* ***************************************** */}
