@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog }) => {
-    const [showDetails, setShowDetails] = useState(true)
+    const [showDetails, setShowDetails] = useState(false)
 
     const showBlogDetails = { display: showDetails ? '' : 'none' }
 
