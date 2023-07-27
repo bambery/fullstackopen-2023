@@ -155,7 +155,7 @@ const App = () => {
                     {process.env.NODE_ENV === 'development' &&
                     <div className='button-populate-db'>
                         <button onClick={populateBlogs}>populate test</button>
-                        <button onClick={deleteAllUserBlogs}>drop blog db</button>
+                        <button onClick={deleteAllUserBlogs}>drop user blogs</button>
                     </div>
                     }
                     { /* ***************************************** */}

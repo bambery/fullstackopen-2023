@@ -43,9 +43,10 @@ describe('<Blog />', () => {
     })
 
     test('clicking the \'view\' button displays additional details including URL and # of likes', async () => {
-        render(<Blog blog={blog} />)
         const user = userEvent.setup()
-        const button = screen.getByText('view')
+
+        render(<Blog blog={blog} />)
+        const button = screen.getByRole('button', { name: 'view' })
         await user.click(button)
 
         expect(screen.getByText('likes: 10')).toBeVisible()
@@ -60,9 +61,12 @@ describe('<Blog />', () => {
             <Blog blog={blog} handleUpdateBlog={mockHandleUpdateBlog} />
         )
 
-        const button = screen.getByText('like')
-        await user.click(button)
-        await user.click(button)
+        const viewButton = screen.getByRole('button', { name: 'view' })
+        await user.click(viewButton)
+
+        const likeButton = screen.getByRole('button', { name: 'like' })
+        await user.click(likeButton)
+        await user.click(likeButton)
 
         expect(mockHandleUpdateBlog.mock.calls).toHaveLength(2)
     })
