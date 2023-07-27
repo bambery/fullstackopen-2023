@@ -5,33 +5,18 @@ import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 describe('<Blog />', () => {
-    let blog
-
-    beforeEach(() => {
-        const fakeUser = {
-                id: 2,
-                name: 'foo',
-                username: 'foouser'
+    let blog = {
+        title: 'Test Blog Title',
+        author: 'Test Author',
+        url: 'http://test.com',
+        likes: 10,
+        id: 1,
+        user: {
+            id: 2,
+            name: 'testuser',
+            username: 'testusername'
         }
-
-        blog = {
-            title: 'Test Blog Title',
-            author: 'Test Author',
-            url: 'http://test.com',
-            likes: 10,
-            id: 1,
-            user: fakeUser
-        }
-
-        localStorage.setItem(
-            'loggedBlogappUser', JSON.stringify(fakeUser)
-        )
-
-    })
-
-    afterEach(() => {
-        localStorage.removeItem('loggedBlogappUser')
-    })
+    }
 
     test('by default Blog only shows title and author, and not URL or # of likes', async () => {
         render(<Blog blog={blog} />)

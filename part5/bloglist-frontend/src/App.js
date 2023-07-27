@@ -149,7 +149,13 @@ const App = () => {
                         {blogs
                             .sort((a, b) => b.likes - a.likes)
                             .map(blog =>
-                                <Blog key={blog.id} blog={blog} handleUpdateBlog={handleUpdateBlog} handleDeleteBlog={handleDeleteBlog} />)}
+                                <Blog
+                                    key={blog.id}
+                                    blog={blog}
+                                    handleUpdateBlog={handleUpdateBlog}
+                                    handleDeleteBlog={handleDeleteBlog}
+                                    userIsAuthor={blog.user.username === user.username}
+                                />)}
                     </div>
                     { /* used for dev db setuep> *******************/}
                     {process.env.NODE_ENV === 'development' &&
