@@ -37,4 +37,31 @@ describe('Blog app', () => {
                 .and('have.css', 'color', 'rgb(255, 0, 0)')
         })
     })
+
+    describe('when logged in', () => {
+        beforeEach(() => {
+            cy.login({ username: 'santhony', password: 'secretpassword' })
+            cy.newBlog({ title: 'blog1', author: 'author one', url: 'http://url1.com' })
+            cy.newBlog({ title: 'blog2', author: 'author two', url: 'http://url2.com' })
+        })
+
+        it('A blog can be created', () => {
+            cy.get('div.blog-list').children().as('blogList')
+            cy.get('@blogList').should('have.length', 2)
+
+
+            cy.contains('button', 'new blog').click()
+            cy.contains('title:').find('input').type('A cool new blog title')
+            cy.contains('author:').find('input').type('A. Testauthor')
+            cy.contains('url:').find('input').type('http://www.coolblog.com')
+            cy.contains('button', 'create').click()
+
+            cy
+                .get('.notification')
+                .should('contain', 'New blog: "')
+                .and('have.css', 'color', 'rgb(0, 128, 0)')
+
+            cy.get('@blogList').should('have.length', 3)
+        })
+    })
 })
