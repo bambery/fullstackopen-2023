@@ -1,0 +1,40 @@
+.notification {
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.error {
+    color: red;
+}
+
+.info {
+    color: green;
+}
+
+.blog-list {
+    margin-top: 10px;
+}
+
+.main-container {
+    width: 800px;
+}
+
+.centering-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.populate-db {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.inline-right-button {
+    margin-left: 5px;
+}
