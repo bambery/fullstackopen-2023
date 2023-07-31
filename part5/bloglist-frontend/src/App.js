@@ -70,7 +70,9 @@ const App = () => {
                 setNotificationMessage(null)
             }, 5000)
         } catch (exception) {
-            setErrorMessage(exception)
+            exception.response?.data?.error
+                ? setErrorMessage(exception.response.data.error)
+                : setErrorMessage(exception)
             setTimeout(() => {
                 setErrorMessage(null)
             }, 5000)
