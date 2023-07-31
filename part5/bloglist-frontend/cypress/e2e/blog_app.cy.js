@@ -73,6 +73,24 @@ describe('Blog app', () => {
             cy.contains('blog2').contains('likes: 2')
         })
 
+        it('Blogs are ordered by number of likes', () => {
+            cy.newBlog({ title: 'mostLikes', author: 'author three', url: 'http://url3.com', likes: 10 })
+            cy.newBlog({ title: 'secondMostLikes', author: 'author four', url: 'http://url4.com', likes: 5 })
+
+            cy.get('div.blog-list').children().as('blogList')
+            cy.get('@blogList').eq(0).contains('mostLikes')
+            cy.get('@blogList').eq(1).contains('secondMostLikes')
+            cy.get('@blogList').eq(2).contains('blog1')
+            cy.get('@blogList').eq(3).contains('blog2')
+
+            cy.contains('blog2').contains('button', 'view').click()
+            cy.contains('blog2').contains('button', 'like').click()
+            cy.contains('blog2').contains('likes: 1')
+
+            cy.get('@blogList').eq(2).contains('blog2')
+            cy.get('@blogList').eq(3).contains('blog1')
+        })
+
         describe('deleting a blog', () => {
             beforeEach(() => {
                 const secondUser = {
