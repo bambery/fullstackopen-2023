@@ -68,8 +68,33 @@ describe('Blog app', () => {
             cy.contains('blog2').contains('button', 'view').click()
             cy.contains('blog2').contains('likes: 0')
             cy.contains('blog2').contains('button', 'like').click()
+            cy.contains('blog2').contains('likes: 1')
             cy.contains('blog2').contains('button', 'like').click()
             cy.contains('blog2').contains('likes: 2')
         })
+
+        it('A user can delete a blog they created', () => {
+            const secondUser = {
+                username: 'mascary',
+                name: 'Mary Ann Shadd Cary',
+                password: 'coolpassword'
+            }
+            cy.request('POST', `${Cypress.env('BACKEND')}/users`, secondUser)
+            cy.contains('button', 'logout').click()
+            cy.login({ username: secondUser.username, password: secondUser.password })
+            cy.visit('')
+            cy.newBlog({
+                title: 'second user title',
+                author: 'second user author',
+                url: 'http://seconduser.com'
+            })
+
+            cy.contains('div', 'second user title').contains('button', 'view').click()
+            cy.contains('div', 'second user title').contains('button', 'remove')
+            //cy.contains('div', 'blog2').contains('button', 'view').click()
+            //cy.contains('div', 'blog2').should('not.contain', 'remove')
+
+        })
+
     })
 })
