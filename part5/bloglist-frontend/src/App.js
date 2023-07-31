@@ -70,7 +70,9 @@ const App = () => {
                 setNotificationMessage(null)
             }, 5000)
         } catch (exception) {
-            setErrorMessage(exception)
+            exception.response?.data?.error
+                ? setErrorMessage(exception.response.data.error)
+                : setErrorMessage(exception)
             setTimeout(() => {
                 setErrorMessage(null)
             }, 5000)
@@ -103,26 +105,6 @@ const App = () => {
             }, 5000)
         }
     }
-
-    // used for dev db setup *************************
-    const populateBlogs = async () => {
-        try {
-            const fetchedBlogs = await blogService.createAllDummies()
-            setBlogs(blogs.concat(fetchedBlogs))
-        } catch (exception) {
-            setErrorMessage(exception)
-        }
-    }
-
-    const deleteAllUserBlogs = async () => {
-        try {
-            await blogService.deleteAllUserBlogs()
-            setBlogs(blogs.filter(blog => blog.user.username !== user.username))
-        } catch (exception) {
-            setErrorMessage(exception)
-        }
-    }
-    //***********************************************
 
     return (
         <div className='centering-div'>
@@ -157,14 +139,6 @@ const App = () => {
                                     userIsAuthor={blog.user.username === user.username}
                                 />)}
                     </div>
-                    { /* used for dev db setuep> *******************/}
-                    {process.env.NODE_ENV === 'development' &&
-                    <div className='button-populate-db'>
-                        <button onClick={populateBlogs}>populate test</button>
-                        <button onClick={deleteAllUserBlogs}>drop user blogs</button>
-                    </div>
-                    }
-                    { /* ***************************************** */}
                 </div> }
             </div>
         </div>
