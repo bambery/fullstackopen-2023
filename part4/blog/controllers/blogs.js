@@ -38,17 +38,6 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     response.status(201).json(savedBlog)
 })
 
-// this is for me so I can easily drop and recreate the db during dev. Seeding db in this way is done through FE so that users/tokens are appropriately set each time
-// ************************************************
-blogsRouter.delete('/deleteblogs', middleware.userExtractor, async (request, response) => {
-    const bloguser = request.user
-    await Blog.deleteMany({ user: bloguser })
-    bloguser.blogs = []
-    await bloguser.save()
-    response.status(204).end()
-})
-//*************************************************
-
 blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
     const user = request.user
     const blog = await Blog.findById(request.params.id)

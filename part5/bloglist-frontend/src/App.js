@@ -106,26 +106,6 @@ const App = () => {
         }
     }
 
-    // used for dev db setup *************************
-    const populateBlogs = async () => {
-        try {
-            const fetchedBlogs = await blogService.createAllDummies()
-            setBlogs(blogs.concat(fetchedBlogs))
-        } catch (exception) {
-            setErrorMessage(exception)
-        }
-    }
-
-    const deleteAllUserBlogs = async () => {
-        try {
-            await blogService.deleteAllUserBlogs()
-            setBlogs(blogs.filter(blog => blog.user.username !== user.username))
-        } catch (exception) {
-            setErrorMessage(exception)
-        }
-    }
-    //***********************************************
-
     return (
         <div className='centering-div'>
             <div className='main-container'>
@@ -159,14 +139,6 @@ const App = () => {
                                     userIsAuthor={blog.user.username === user.username}
                                 />)}
                     </div>
-                    { /* used for dev db setuep> *******************/}
-                    {process.env.NODE_ENV === 'development' &&
-                    <div className='button-populate-db'>
-                        <button onClick={populateBlogs}>populate test</button>
-                        <button onClick={deleteAllUserBlogs}>drop user blogs</button>
-                    </div>
-                    }
-                    { /* ***************************************** */}
                 </div> }
             </div>
         </div>
