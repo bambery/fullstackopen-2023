@@ -63,5 +63,13 @@ describe('Blog app', () => {
 
             cy.get('@blogList').should('have.length', 3)
         })
+
+        it('Can like a blog', () => {
+            cy.contains('blog2').contains('button', 'view').click()
+            cy.contains('blog2').contains('likes: 0')
+            cy.contains('blog2').contains('button', 'like').click()
+            cy.contains('blog2').contains('button', 'like').click()
+            cy.contains('blog2').contains('likes: 2')
+        })
     })
 })
