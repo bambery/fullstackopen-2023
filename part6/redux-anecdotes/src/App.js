@@ -1,12 +1,12 @@
 import { useSelector, useDispatch } from 'react-redux'
-import NewAnecdote from './components/NewAnecdote'
+import AnecdoteForm from './components/AnecdoteForm'
 import AnecdoteList from './components/AnecdoteList'
 
 const App = () => {
     return (
         <div>
             <AnecdoteList />
-            <NewAnecdote />
+            <AnecdoteForm />
         </div>
     )
 }
