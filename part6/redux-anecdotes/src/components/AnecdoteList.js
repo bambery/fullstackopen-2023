@@ -24,9 +24,11 @@ const AnecdoteList = () => {
     })
     const dispatch = useDispatch()
 
+    console.log(filteredAnecdotes)
+
     return (
         <div>
-            {filteredAnecdotes
+            {[...filteredAnecdotes]
                 .sort((a, b) => b.votes - a.votes)
                 .map(anecdote =>
                     <Anecdote
