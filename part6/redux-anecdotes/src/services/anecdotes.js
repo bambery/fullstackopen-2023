@@ -18,4 +18,5 @@ const updateAnecdote = async (id, fieldsToUpdate) => {
     return response.data
 }
 
+// eslint-disable-next-line
 export default { getAll, createNew, updateAnecdote }
