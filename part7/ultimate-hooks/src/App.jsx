@@ -25,7 +25,7 @@ const useResource = baseUrl => {
             .catch(e => {
                 console.log(e)
             })
-    }, [])
+    }, [baseUrl])
 
     const create = resource => {
         axios.post(baseUrl, resource).then(response => {
