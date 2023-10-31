@@ -11,7 +11,7 @@ const App = () => {
     }
 
     const result = useQuery({
-        queryKey: ['notes'],
+        queryKey: ['anecdotes'],
         queryFn: getAnecdotes,
         retry: false
     })
