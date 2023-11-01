@@ -5,13 +5,17 @@ import { createAnecdote } from '../requests'
 import NotificationContext from '../NotificationContext'
 
 const AnecdoteForm = () => {
-    const [notification, dispatch] = useContext(NotificationContext)
+    const [notification, notificationDispatch] = useContext(NotificationContext)
     const queryClient = useQueryClient()
 
     const newAnecdoteMutation = useMutation({
         mutationFn: createAnecdote,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
+            notificationDispatch({ type: 'NEW_ANECDOTE', payload: content })
+        },
+        onError: () => {
+            notificationDispatch({ type: 'ERROR_LENGTH' })
         }
     })
 
@@ -20,7 +24,6 @@ const AnecdoteForm = () => {
         const content = event.target.anecdote.value
         event.target.anecdote.value = ''
         newAnecdoteMutation.mutate({ content, votes: 0 })
-        dispatch({ type: 'NEW_ANECDOTE', payload: content })
     }
 
     return (
