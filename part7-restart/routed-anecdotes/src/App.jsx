@@ -7,7 +7,7 @@ import {
     useNavigate,
 } from 'react-router-dom'
 
-import useField from './hooks'
+import { useField } from './hooks'
 
 const Menu = () => {
     const padding = {
@@ -29,7 +29,7 @@ const Anecdote = ({ anecdote }) => {
     }
     return (
         <div>
-            <h2>{anecdote.content}</h2>
+            <h2>{anecdote.content} by {anecdote.author}</h2>
             <div style={padding}>has {anecdote.votes} votes</div>
         </div>
     )
@@ -94,12 +94,19 @@ const CreateNew = (props) => {
     const handleSubmit = (e) => {
         e.preventDefault()
         props.addNew({
-            content,
-            author,
-            info,
+            content: content.value,
+            author: author.value,
+            info: info.value,
             votes: 0
         })
         navigate('/')
+    }
+
+    const handleReset = (e) => {
+        e.preventDefault()
+        content.onReset()
+        author.onReset()
+        info.onReset()
     }
 
     return (
@@ -118,7 +125,9 @@ const CreateNew = (props) => {
                     url for more info:
                     <input {...info} />
                 </div>
-                <button>create</button>
+                <div>
+                    <button type='submit'>create</button><button type='reset' onClick={handleReset}>reset</button>
+                </div>
             </form>
         </div>
     )
