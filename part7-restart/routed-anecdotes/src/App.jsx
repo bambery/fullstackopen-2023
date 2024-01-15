@@ -102,6 +102,7 @@ const CreateNew = (props) => {
         navigate('/')
     }
 
+    // in case I forget why this works: https://react.dev/reference/react-dom/components/common - onReset is a prop that is supported for all form components
     const handleReset = (e) => {
         e.preventDefault()
         content.onReset()
