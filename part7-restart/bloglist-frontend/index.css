@@ -1,40 +1,40 @@
 .main-container {
-    width: 800px;
+  width: 800px;
 }
 
 .centering-div {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .error {
-    color: red;
+  color: red;
 }
 
 .info {
-    color: green;
+  color: green;
 }
 
 .blog-list {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .notification {
-    background: lightgrey;
-    font-size: 20px;
-    border-style: solid;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
+  background: lightgrey;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
 .populate-db {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
 .inline-right-button {
-    margin-left: 5px;
+  margin-left: 5px;
 }
