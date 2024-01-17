@@ -4,11 +4,13 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import App from "./App";
 import notificationReducer from './reducers/notificationReducer'
+import blogReducer from './reducers/blogReducer'
 
 // configureStore handles setup of redux-devtools
 const store = configureStore({
   reducer: {
     notification: notificationReducer,
+    blogs: blogReducer
   }
 })
 

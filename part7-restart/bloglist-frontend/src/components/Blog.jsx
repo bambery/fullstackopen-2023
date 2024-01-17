@@ -1,7 +1,12 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { removeBlog } from '../reducers/blogReducer'
+import { newNotification, newError } from '../reducers/notificationReducer'
+import blogService from '../services/blogs'
 
-const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog, userIsAuthor }) => {
+const Blog = ({ blog, handleUpdateBlog, userIsAuthor }) => {
     const [showDetails, setShowDetails] = useState(false)
+  const dispatch = useDispatch()
 
     const showBlogDetails = { display: showDetails ? '' : 'none' }
 
@@ -22,11 +27,18 @@ const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog, userIsAuthor }) => {
         handleUpdateBlog(updatedBlog)
     }
 
-    const deleteBlog = () => {
-        if (window.confirm(`Remove blog: "${blog.title}" by ${blog.author}?`)){
-            handleDeleteBlog(blog.id)
-        }
+  const deleteBlog = async () => {
+    if (window.confirm(`Remove blog: "${blog.title}" by ${blog.author}?`)){
+      try {
+        await blogService.remove(blog.id);
+        dispatch(removeBlog(blog.id));
+        dispatch(newNotification(`"${blog.title}" by ${blog.author} deleted`));
+      } catch (exception) {
+        console.log(exception);
+        dispatch(newError(exception.response.data.error));
+      }
     }
+  }
 
     return (
         <div style={blogStyle}>
