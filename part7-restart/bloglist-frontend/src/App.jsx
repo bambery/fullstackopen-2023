@@ -104,7 +104,7 @@ const App = () => {
       <div className="main-container">
         {!user && <h1>Log in to application</h1>}
         {user && <h1>Blogs</h1>}
-        <Notification message={errorMessage} type="error" />
+        <Notification />
         {!user && (
           <Toggleable buttonLabel="login">
             <LoginForm handleLogin={handleLogin} />
