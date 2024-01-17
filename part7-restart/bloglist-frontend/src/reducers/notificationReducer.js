@@ -21,7 +21,7 @@ const notificationSlice = createSlice({
       };
       return notification;
     },
-    clearNotification(state, action) {
+    clearNotification() {
       return "";
     },
   },

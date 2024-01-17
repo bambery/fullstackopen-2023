@@ -21,7 +21,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then((blogs) => dispatch(setBlogs(blogs)));
-  }, []);
+  }, [dispatch]);
 
   const blogs = useSelector(state => state.blogs)
 
@@ -55,18 +55,6 @@ const App = () => {
     window.localStorage.removeItem("loggedBlogAppUser");
   };
 
-  const handleUpdateBlog = async (blogObj) => {
-    try {
-      const updatedBlog = await blogService.update(blogObj);
-      const updatedBlogList = blogs.map((b) => (blogObj.id=== b.id ? updatedBlog : b));
-      setBlogs(updatedBlogList)
-    } catch (exception) {
-      exception.response?.data?.error
-        ? dispatch(newError(exception.response.data.error))
-        : dispatch(newError(exception));
-    }
-  };
-
   return (
     <div className="centering-div">
       <div className="main-container">
@@ -94,7 +82,6 @@ const App = () => {
                   <Blog
                     key={blog.id}
                     blog={blog}
-                    handleUpdateBlog={handleUpdateBlog}
                     userIsAuthor={blog.user.username === user.username}
                   />
                 ))}

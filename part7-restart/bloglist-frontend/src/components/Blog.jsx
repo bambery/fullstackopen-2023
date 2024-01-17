@@ -1,31 +1,39 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { removeBlog } from '../reducers/blogReducer'
+import { removeBlog, updateBlog } from '../reducers/blogReducer'
 import { newNotification, newError } from '../reducers/notificationReducer'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, handleUpdateBlog, userIsAuthor }) => {
+const Blog = ({ blog, userIsAuthor }) => {
     const [showDetails, setShowDetails] = useState(false)
   const dispatch = useDispatch()
 
-    const showBlogDetails = { display: showDetails ? '' : 'none' }
+  const showBlogDetails = { display: showDetails ? '' : 'none' }
 
-    const blogStyle = {
-        padding: '5px',
-        border: 'solid',
-        borderWidth: '1px',
-        borderRadius: '5px',
-        marginBottom: 5
+  const blogStyle = {
+    padding: '5px',
+    border: 'solid',
+    borderWidth: '1px',
+    borderRadius: '5px',
+    marginBottom: 5
+  }
+
+  const incrementLikes = async () => {
+    const updatedBlogObj = {
+      ...blog,
+      likes: blog.likes + 1
     }
 
-    const incrementLikes = () => {
-        const updatedBlog = {
-            ...blog,
-            likes: blog.likes + 1
-        }
-
-        handleUpdateBlog(updatedBlog)
+    try {
+      const updatedBlog = await blogService.update(updatedBlogObj);
+      await blogService.update(updatedBlog);
+      dispatch(updateBlog(updatedBlog));
+    } catch (exception) {
+      exception.response?.data?.error
+        ? dispatch(newError(exception.response.data.error))
+        : dispatch(newError(exception));
     }
+  }
 
   const deleteBlog = async () => {
     if (window.confirm(`Remove blog: "${blog.title}" by ${blog.author}?`)){
@@ -35,21 +43,23 @@ const Blog = ({ blog, handleUpdateBlog, userIsAuthor }) => {
         dispatch(newNotification(`"${blog.title}" by ${blog.author} deleted`));
       } catch (exception) {
         console.log(exception);
-        dispatch(newError(exception.response.data.error));
+        exception.response?.data?.error
+          ? dispatch(newError(exception.response.data.error))
+        : dispatch(newError(exception));
       }
     }
   }
 
-    return (
-        <div style={blogStyle}>
-            <div>
-                {blog.title} by {blog.author}
-                <button className='inline-right-button' onClick = {() => setShowDetails(!showDetails)}>{showDetails ? 'hide' : 'view'}</button>
-                <div style={showBlogDetails}>
-                    <div>
-                      <a href={`${blog.url}`}>{blog.url}</a>
-                    </div>
-                    <div>
+  return (
+    <div style={blogStyle}>
+      <div>
+        {blog.title} by {blog.author}
+        <button className='inline-right-button' onClick = {() => setShowDetails(!showDetails)}>{showDetails ? 'hide' : 'view'}</button>
+        <div style={showBlogDetails}>
+          <div>
+            <a href={`${blog.url}`}>{blog.url}</a>
+          </div>
+          <div>
                         likes: {blog.likes}
                         <button className='inline-right-button' onClick={incrementLikes}>like</button>
                     </div>
