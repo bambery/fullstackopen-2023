@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useDispatch } from 'react-redux';
 
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
@@ -9,12 +10,15 @@ import Toggleable from "./components/Toggleable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
+//import { createNotification, clearNotification } from "./reducers/notificationReducer";
+import { newNotification, newError } from './reducers/notificationReducer'
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [notificationMessage, setNotificationMessage] = useState(null);
+
   const blogFormRef = useRef();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -39,18 +43,12 @@ const App = () => {
       setUser(user);
       blogService.setToken(user.token);
     } catch (exception) {
-      setErrorMessage("Wrong username or password");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(newError("Wrong username or password"));
     }
   };
 
   const handleLogout = () => {
-    setNotificationMessage(`${user.name} has logged out`);
-    setTimeout(() => {
-      setNotificationMessage(null);
-    }, 5000);
+    dispatch(newNotification(`${user.name} has logged out`));
     setUser(null);
     blogService.setToken(null);
     window.localStorage.removeItem("loggedBlogAppUser");
@@ -66,19 +64,11 @@ const App = () => {
       });
       const newBlogs = blogs.concat(newBlog);
       setBlogs(newBlogs);
-      setNotificationMessage(
-        `New blog: "${newBlog.title}" by ${newBlog.author} added`,
-      );
-      setTimeout(() => {
-        setNotificationMessage(null);
-      }, 5000);
+      dispatch(newNotification(`New blog: "${newBlog.title}" by ${newBlog.author} added`));
     } catch (exception) {
       exception.response?.data?.error
-        ? setErrorMessage(exception.response.data.error)
-        : setErrorMessage(exception);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+        ? dispatch(newError(exception.response.data.error))
+        : dispatch(newError(exception));
     }
   };
 
@@ -89,24 +79,23 @@ const App = () => {
       setBlogs(updatedBlogList)
     } catch (exception) {
       exception.response?.data?.error
-        ? setErrorMessage(exception.response.data.error)
-        : setErrorMessage(exception);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+        ? dispatch(newError(exception.response.data.error))
+        : dispatch(newError(exception));
     }
   };
 
-  const handleDeleteBlog = async ({ blogId }) => {
+  const handleDeleteBlog = async ( blogId ) => {
     try {
       await blogService.remove(blogId);
-      setBlogs(blogs.filter((blog) => blog.id !== blogId));
+      setBlogs(blogs.filter((blog) => {
+        if (blog.id === blogId) {
+          dispatch(newNotification(`"${blog.title}" by ${blog.author} deleted`));
+        }
+        return blog.id !== blogId;
+      }))
     } catch (exception) {
       console.log(exception);
-      setErrorMessage(exception.response.data.error);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(newError(exception.response.data.error));
     }
   };
 
@@ -116,7 +105,6 @@ const App = () => {
         {!user && <h1>Log in to application</h1>}
         {user && <h1>Blogs</h1>}
         <Notification message={errorMessage} type="error" />
-        <Notification message={notificationMessage} type="info" />
         {!user && (
           <Toggleable buttonLabel="login">
             <LoginForm handleLogin={handleLogin} />
