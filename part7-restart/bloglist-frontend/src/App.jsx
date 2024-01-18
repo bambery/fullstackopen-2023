@@ -23,6 +23,14 @@ const App = () => {
     blogService.getAll().then((blogs) => dispatch(setBlogs(blogs)));
   }, [dispatch]);
 
+  useEffect(() => {
+    const loggedInUser = window.localStorage.getItem('loggedBlogAppUser')
+    if (loggedInUser) {
+      setUser(loggedInUser)
+      blogService.setToken(loggedInUser.token);
+    }
+  }, []);
+
   const blogs = useSelector(state => state.blogs)
 
   useEffect(() => {
