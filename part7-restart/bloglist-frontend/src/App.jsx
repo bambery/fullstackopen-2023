@@ -3,14 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Routes,
   Route,
-  Link
+  Link,
+  Outlet,
 } from 'react-router-dom';
 
 import Nav from './components/Nav';
-import UserList from './components/UserList';
-import Blogs from './components/Blogs';
-import Blog from './components/Blog';
-import User from './components/User';
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import userService from './services/users';
@@ -38,12 +35,7 @@ const App = () => {
         {loggedIn && (
           <div>
             <h1>Blog app</h1>
-            <Routes>
-              <Route path="/" element={<Blogs />} />
-              <Route path="/users" element={<UserList />} />
-              <Route path="/users/:id" element={<User />} />
-              <Route path="/blogs/:id" element={<Blog />} />
-            </Routes>
+            <Outlet />
           </div>
         )}
       </div>

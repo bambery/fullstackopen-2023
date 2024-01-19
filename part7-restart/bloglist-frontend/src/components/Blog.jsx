@@ -24,6 +24,11 @@ const Blog = () => {
     dispatch(deleteBlog(blog));
   };
 
+  // if this url is loaded directly without first hitting the main page, then the data needs to be fetched first from the App component. The page should load after that is done.
+  if (!blog) {
+    return <div>Loading...</div>
+  }
+
   return (
     <div>
       <h2>{blog.title} by {blog.author}</h2>
