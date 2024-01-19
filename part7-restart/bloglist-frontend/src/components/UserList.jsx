@@ -1,25 +1,11 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useMatch } from 'react-router-dom';
-import { setUsers } from '../reducers/userReducer';
-import userService from '../services/users';
 
 const UserList = () => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    userService.getAll().then((users) => dispatch(setUsers(users)));
-  }, [dispatch]);
-
   const users = useSelector(state => state.users);
-
-  /*
-  const match = useMatch('/users/:id/');
-  const user = match
-    ?  users.find(user => user.id === Number(match.params.id))
-    : null
-
-*/
 
   return (
     <div>
