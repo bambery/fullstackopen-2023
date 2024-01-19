@@ -1,14 +1,15 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Toggleable from './Toggleable'
 
 import { useField } from "../hooks";
 import { logInUser, logOutUser } from '../reducers/loggedInReducer'
 
-const LoginForm = ({ loggedIn }) => {
+const LoginForm = () => {
   const username = useField("text");
   const password = useField("password");
   const dispatch = useDispatch();
+  const loggedIn = useSelector(store => store.loggedIn);
 
   const handleSubmit = (e) => {
     e.preventDefault();
