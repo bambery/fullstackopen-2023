@@ -18,12 +18,7 @@ const LoginForm = () => {
     password.onReset();
   };
 
-  const handleLogout = (e) => {
-    e.preventDefault()
-    dispatch(logOutUser());
-  }
-
-  const logInForm = () => (
+  return (
     <div>
       <h1>Log in to application</h1>
       <Toggleable buttonLabel="login">
@@ -33,20 +28,6 @@ const LoginForm = () => {
           <button type="submit">login</button>
         </form>
       </Toggleable>
-    </div>
-  )
-
-  const loggedInUsername = () => (
-    <p>
-      {loggedIn.name} is logged in
-      <button className='inline-right-button' onClick={handleLogout}>logout</button>
-    </p>
-  )
-
-  return (
-    <div>
-      {!loggedIn && logInForm()}
-      {loggedIn && loggedInUsername()}
     </div>
   );
 };

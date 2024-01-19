@@ -30,10 +30,10 @@ const App = () => {
     <div className="centering-div">
       <div className="main-container">
         <Notification />
-        <Nav />
-        <LoginForm />
+        {!loggedIn && <LoginForm />}
         {loggedIn && (
           <div>
+            <Nav loggedIn={loggedIn} />
             <h1>Blog app</h1>
             <Outlet />
           </div>
