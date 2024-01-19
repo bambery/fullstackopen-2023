@@ -14,8 +14,6 @@ import loginService from "./services/login";
 import { newNotification, newError } from './reducers/notificationReducer'
 
 const App = () => {
-  const [user, setUser] = useState(null);
-
   const blogFormRef = useRef();
   const dispatch = useDispatch();
 
@@ -23,63 +21,17 @@ const App = () => {
     blogService.getAll().then((blogs) => dispatch(setBlogs(blogs)));
   }, [dispatch]);
 
-  useEffect(() => {
-    const loggedInUser = window.localStorage.getItem('loggedBlogAppUser')
-    if (loggedInUser) {
-      setUser(loggedInUser)
-      blogService.setToken(loggedInUser.token);
-    }
-  }, []);
-
   const blogs = useSelector(state => state.blogs)
-
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
-
-  const handleLogin = async ({ username, password }) => {
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
-      window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
-      setUser(user);
-      blogService.setToken(user.token);
-    } catch (exception) {
-      dispatch(newError("Wrong username or password"));
-    }
-  };
-
-  const handleLogout = () => {
-    dispatch(newNotification(`${user.name} has logged out`));
-    setUser(null);
-    blogService.setToken(null);
-    window.localStorage.removeItem("loggedBlogAppUser");
-  };
+  const loggedIn = useSelector(state => state.loggedIn)
 
   return (
     <div className="centering-div">
       <div className="main-container">
-        {!user && <h1>Log in to application</h1>}
-        {user && <h1>Blogs</h1>}
         <Notification />
-        {!user && (
-          <Toggleable buttonLabel="login">
-            <LoginForm handleLogin={handleLogin} />
-          </Toggleable>
-        )}
-        {user && (
+        <LoginForm loggedIn={loggedIn}/>
+        {loggedIn && (
           <div>
-            <p>
-              {user.name} is logged in{" "}
-              <button onClick={handleLogout}>logout</button>
-            </p>
+            <h1>Blogs</h1>
             <Toggleable buttonLabel="new blog" ref={blogFormRef}>
               <BlogForm toggleForm={() => blogFormRef.current.toggleVisibility()} />
             </Toggleable>
@@ -90,7 +42,7 @@ const App = () => {
                   <Blog
                     key={blog.id}
                     blog={blog}
-                    userIsAuthor={blog.user.username === user.username}
+                    userIsAuthor={blog.user.username === loggedIn.username}
                   />
                 ))}
             </div>
