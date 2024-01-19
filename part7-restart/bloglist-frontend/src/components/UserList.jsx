@@ -16,18 +16,22 @@ const UserList = () => {
     <div>
       <h1>Users</h1>
       <table>
-        <tr>
-          <th></th>
-          <th>blogs created</th>
-        </tr>
-        {users
-            .toSorted((a, b) => b.blogs.length - a.blogs.length)
-            .map((user) => (
-              <tr key={user.id}>
-                <td>{user.name}</td>
-                <td>{user.blogs.length}</td>
-              </tr>
-            ))}
+        <thead>
+          <tr>
+            <th></th>
+            <th>blogs created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users
+              .toSorted((a, b) => b.blogs.length - a.blogs.length)
+              .map((user) => (
+                <tr key={user.id}>
+                  <td>{user.name}</td>
+                  <td>{user.blogs.length}</td>
+                </tr>
+              ))}
+        </tbody>
       </table>
     </div>
   )
