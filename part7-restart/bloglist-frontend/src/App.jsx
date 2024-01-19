@@ -13,7 +13,6 @@ const App = () => {
   const blogFormRef = useRef();
   const dispatch = useDispatch();
 
-  const blogs = useSelector(state => state.blogs)
   const loggedIn = useSelector(state => state.loggedIn)
 
   return (
