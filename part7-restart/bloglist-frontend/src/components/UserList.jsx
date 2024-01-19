@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
+import { Link, useMatch } from 'react-router-dom';
 import { setUsers } from '../reducers/userReducer';
 import userService from '../services/users';
 
@@ -11,6 +12,14 @@ const UserList = () => {
   }, [dispatch]);
 
   const users = useSelector(state => state.users);
+
+  /*
+  const match = useMatch('/users/:id/');
+  const user = match
+    ?  users.find(user => user.id === Number(match.params.id))
+    : null
+
+*/
 
   return (
     <div>
@@ -27,7 +36,11 @@ const UserList = () => {
               .toSorted((a, b) => b.blogs.length - a.blogs.length)
               .map((user) => (
                 <tr key={user.id}>
-                  <td>{user.name}</td>
+                  <td>
+                    <Link to={`/users/${user.id}`}>
+                     {user.name}
+                    </Link>
+                  </td>
                   <td>{user.blogs.length}</td>
                 </tr>
               ))}

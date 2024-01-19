@@ -9,16 +9,15 @@ import {
 import Nav from './components/Nav';
 import UserList from './components/UserList';
 import Blogs from './components/Blogs';
+import User from './components/User';
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import { newNotification, newError } from './reducers/notificationReducer'
 
 const App = () => {
-  const blogFormRef = useRef();
   const dispatch = useDispatch();
 
   const loggedIn = useSelector(state => state.loggedIn)
-
 
   return (
     <div className="centering-div">
@@ -32,6 +31,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Blogs />} />
               <Route path="/users" element={<UserList />} />
+              <Route path="/users/:id" element={<User />} />
             </Routes>
           </div>
         )}
