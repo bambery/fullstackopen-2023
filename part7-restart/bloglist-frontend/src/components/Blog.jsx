@@ -1,16 +1,28 @@
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { incrementLikes, deleteBlog } from "../reducers/blogReducer";
-import { useMatch } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
+import { newError } from '../reducers/notificationReducer';
 
 const Blog = () => {
   const dispatch = useDispatch();
-  const loggedIn = useSelector(store => store.loggedInUser);
+  const navigate = useNavigate();
+  const loggedIn = useSelector(store => store.loggedIn);
   const blogs = useSelector(store => store.blogs)
-
   const match = useMatch('/blogs/:id/');
   const blog = match
-    ? blogs.find(blog => blog.id === match.params.id)
-    : null
+      ? blogs.find(blog => blog.id === match.params.id)
+      : null
+
+  // this does not work. If a resource does exist but hasn't been loaded yet, this will also trigger. I have played around with it and can't make it work.
+  /*
+  useEffect(() => {
+    if (!blog){
+      dispatch(newError("The blog you were attempting to access does not exist or has been deleted."));
+      navigate("/");
+    }
+  }, [dispatch, navigate])
+  */
 
   const userIsAuthor = () => {
     return blog.user.id === loggedIn.id;
@@ -24,9 +36,9 @@ const Blog = () => {
     dispatch(deleteBlog(blog));
   };
 
-  // if this url is loaded directly without first hitting the main page, then the data needs to be fetched first from the App component. The page should load after that is done.
+  //why do I need to have this when I have a check in useEffect?
   if (!blog) {
-    return <div>Loading...</div>
+    return null;
   }
 
   return (
@@ -46,10 +58,18 @@ const Blog = () => {
           </button>
         </div>
         <div>added by {blog.user.name}</div>
-        {userIsAuthor && (
-          <button onClick={handleDeleteClick}>remove</button>
+        {userIsAuthor() && (
+          <button onClick={handleDeleteClick}>delete blog</button>
         )}
       </div>
+      <h3>comments</h3>
+      <ul>
+        {blog.comments.map((comment) => (
+          <li key={comment.id}>
+              {comment.content}
+          </li>
+          ))}
+      </ul>
     </div>
   );
 };
