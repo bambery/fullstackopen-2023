@@ -63,13 +63,17 @@ const Blog = () => {
         )}
       </div>
       <h3>comments</h3>
-      <ul>
-        {blog.comments.map((comment) => (
-          <li key={comment.id}>
-              {comment.content}
-          </li>
-          ))}
-      </ul>
+      {blog.comments.length === 0
+        ? <div>no comments yet</div>
+        :
+        <ul>
+          {blog.comments.map((comment) => (
+            <li key={comment.id}>
+                {comment.content}
+            </li>
+            ))}
+        </ul>
+      }
     </div>
   );
 };
