@@ -49,7 +49,9 @@ const seedDB = async () => {
 
     // create 7 blogs on random users
     const userIds = await userCollection
-      .find({}, { _id: 1 })
+      .distinct("_id", {})
+
+    console.log(`Users created: ${JSON.stringify(userIds)}`);
 
     const blogCollection = client.db("blogApp").collection("blogs");
     blogCollection.drop();
@@ -68,12 +70,13 @@ const seedDB = async () => {
       blogsData.push(newBlog);
     }
 
-    blogCollection.insertMany(blogsData);
+    await blogCollection.insertMany(blogsData);
     console.log("Blogs seeded!");
 
     // create 10 comments on random blogs
 
-    blogIds = blogCollection.find({}, { _id: 1 });
+    blogIds = await blogCollection.distinct("_id", {});
+    console.log(`Blogs created: ${JSON.stringify(blogIds)}`);
 
     const commentCollection = client.db("blogApp").collection("comments");
     commentCollection.drop();
