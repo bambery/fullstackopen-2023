@@ -1,11 +1,13 @@
 const middleware = require('../utils/middleware')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const Comment = require('../models/comment')
 
 blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog
         .find({})
         .populate('user', { username: 1, name: 1 })
+    .populate('comments', { content: 1 })
 
     response.json(blogs)
 })
@@ -52,6 +54,8 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
     }
 
     await Blog.findByIdAndRemove(request.params.id)
+  // also delete the comments from this blog
+  await Comment.deleteMany({ blogId: request.params.id })
 
     // remove the association with the deleted blog on the user. Mongoose will ignore any non-existing ids when populating refs, but the ids will still exist on the user object.
     user.blogs = user.blogs.filter(b => {
@@ -83,6 +87,29 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
     const updatedBlog = await blog.save()
     await updatedBlog.populate('user', { username: 1, name: 1 })
     response.status(201).json(updatedBlog)
+})
+
+blogsRouter.get('/:blogId/comments', middleware.blogExtractor, async (request, response) => {
+  const blog = request.blog;
+
+  const comments = await Comment
+    .find({ blog: blog._id });
+  response.json(comments);
+})
+
+blogsRouter.post('/:blogId/comments', middleware.blogExtractor, async (request, response) => {
+  const blog = request.blog;
+  const body = request.body;
+
+  const comment = new Comment({
+    content: body.content,
+    blog: blog._id
+  })
+
+  const savedComment = await comment.save();
+  blog.comments = blog.comments.concat(savedComment._id)
+  await blog.save()
+  response.status(201).json(savedComment);
 })
 
 module.exports = blogsRouter
