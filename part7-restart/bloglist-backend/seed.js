@@ -1,8 +1,13 @@
 // seed the db with some data
 const { faker } = require('@faker-js/faker');
-const MongoClient = require("mongodb").MongoClient;
+//const MongoClient = require("mongodb").MongoClient;
+const mongoose = require('mongoose');
 const config = require('./utils/config')
 const { saltPassword }  = require('./utils/user_helper.js')
+
+const User = require('./models/user')
+const Comment = require('./models/comment');
+const Blog = require('./models/blog');
 
 let i;
 
@@ -18,19 +23,26 @@ const titleCase = (str) => {
   )
 }
 
+mongoose.connect(config.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true })
+  .then(() => {
+    console.log("connected to server");
+  })
+  .catch((err) => {
+    console.log(err);
+  })
+
 const seedDB = async () => {
+  /*
   const uri = config.MONGODB_URI;
   const client = new MongoClient(uri, {
-    useNewUrlParser: true,
   });
+  */
 
   try {
-    await client.connect();
-    console.log("connected to server");
-
     // create 5 users
-    const userCollection = client.db("blogApp").collection("users");
-    userCollection.drop();
+    await User.deleteMany({});
 
     let usersData = [];
     const passwordHash = await saltPassword("secretPassword")
@@ -44,60 +56,59 @@ const seedDB = async () => {
       usersData.push(newUser);
     }
 
-    await userCollection.insertMany(usersData);
+    await User.insertMany(usersData);
     console.log("Users seeded!");
 
     // create 7 blogs on random users
-    const userIds = await userCollection
-      .distinct("_id", {})
+    const users = await User.find({})
+    console.log(`Users created: ${users.map((user) => user.id)}`);
 
-    console.log(`Users created: ${JSON.stringify(userIds)}`);
+    await Blog.deleteMany({});
 
-    const blogCollection = client.db("blogApp").collection("blogs");
-    blogCollection.drop();
-
-    let blogsData = [];
+    //let blogsData = [];
 
     for (i = 0; i < 7; i++) {
       const tempTitle = faker.word.words({ count: { min: 3, max: 6 } });
-     const userId = userIds[randomIdx(userIds.length)];
-      const newBlog = {
+     const randUser = users[randomIdx(users.length)];
+      const blogData = {
         title: titleCase(tempTitle),
         author: faker.person.fullName(),
         url: faker.internet.url(),
-        user: userId
+        user: randUser.id
       }
-      blogsData.push(newBlog);
+      const newBlog = new Blog(blogData);
+      const savedBlog = await newBlog.save()
+      //blogsData.push(newBlog);
+      randUser.blogs = randUser.blogs.concat(savedBlog._id);
+      await randUser.save();
     }
 
-    await blogCollection.insertMany(blogsData);
     console.log("Blogs seeded!");
 
     // create 10 comments on random blogs
+    blogs = await Blog.find({});
+    console.log(`Blogs created: ${blogs.map((blog) => blog.id)}`);
 
-    blogIds = await blogCollection.distinct("_id", {});
-    console.log(`Blogs created: ${JSON.stringify(blogIds)}`);
-
-    const commentCollection = client.db("blogApp").collection("comments");
-    commentCollection.drop();
-
-    let commentsData = [];
+    await Comment.deleteMany({});
 
     for (i = 0; i < 10; i++) {
-      const userId = blogIds[randomIdx(blogIds.length)];
-      const newComment = {
-        content: faker.word.words({ count: { min: 3, max: 10 }})
+      const randBlog = blogs[randomIdx(blogs.length)];
+      const commentData = {
+        content: faker.word.words({ count: { min: 3, max: 10 }}),
+        blog: randBlog.id
       }
-      commentsData.push(newComment);
+      const newComment = new Comment(commentData);
+      const savedComment = await newComment.save();
+      randBlog.comments = randBlog.comments.concat(savedComment._id);
+      await randBlog.save();
     }
-    await commentCollection.insertMany(commentsData);
     console.log("Comments seeded!");
   } catch (err) {
     console.log("problems!")
     console.log(err.stack);
     exit();
   } finally {
-    await client.close();
+    mongoose.connection.close();
   }
 }
 
