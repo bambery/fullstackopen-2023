@@ -41,7 +41,9 @@ const seedDB = async () => {
   */
 
   try {
+    //
     // create 5 users
+    //
     await User.deleteMany({});
 
     let usersData = [];
@@ -59,13 +61,13 @@ const seedDB = async () => {
     await User.insertMany(usersData);
     console.log("Users seeded!");
 
+    //
     // create 7 blogs on random users
+    //
     const users = await User.find({})
     console.log(`Users created: ${users.map((user) => user.id)}`);
 
     await Blog.deleteMany({});
-
-    //let blogsData = [];
 
     for (i = 0; i < 7; i++) {
       const tempTitle = faker.word.words({ count: { min: 3, max: 6 } });
@@ -78,14 +80,13 @@ const seedDB = async () => {
       }
       const newBlog = new Blog(blogData);
       const savedBlog = await newBlog.save()
-      //blogsData.push(newBlog);
-      randUser.blogs = randUser.blogs.concat(savedBlog._id);
-      await randUser.save();
     }
 
     console.log("Blogs seeded!");
 
+    //
     // create 10 comments on random blogs
+    //
     blogs = await Blog.find({});
     console.log(`Blogs created: ${blogs.map((blog) => blog.id)}`);
 
@@ -99,8 +100,6 @@ const seedDB = async () => {
       }
       const newComment = new Comment(commentData);
       const savedComment = await newComment.save();
-      randBlog.comments = randBlog.comments.concat(savedComment._id);
-      await randBlog.save();
     }
     console.log("Comments seeded!");
   } catch (err) {

@@ -34,9 +34,6 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     })
 
     const savedBlog = await blog.save()
-    await savedBlog.populate('user', { username: 1, name: 1 })
-    user.blogs = user.blogs.concat(savedBlog._id)
-    await user.save()
     response.status(201).json(savedBlog)
 })
 
@@ -56,12 +53,6 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
     await Blog.findByIdAndRemove(request.params.id)
   // also delete the comments from this blog
   await Comment.deleteMany({ blogId: request.params.id })
-
-    // remove the association with the deleted blog on the user. Mongoose will ignore any non-existing ids when populating refs, but the ids will still exist on the user object.
-    user.blogs = user.blogs.filter(b => {
-        return b.toString() !== request.params.id
-    })
-    await user.save()
 
     response.status(204).end()
 })
@@ -85,7 +76,6 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
 
     // since we already fetched the Blog document to confirm it exists, I do not need to run a findByIdAndUpdate, I can just run save() on the document and it will run validations
     const updatedBlog = await blog.save()
-    await updatedBlog.populate('user', { username: 1, name: 1 })
     response.status(201).json(updatedBlog)
 })
 
@@ -107,8 +97,6 @@ blogsRouter.post('/:blogId/comments', middleware.blogExtractor, async (request, 
   })
 
   const savedComment = await comment.save();
-  blog.comments = blog.comments.concat(savedComment._id)
-  await blog.save()
   response.status(201).json(savedComment);
 })
 
