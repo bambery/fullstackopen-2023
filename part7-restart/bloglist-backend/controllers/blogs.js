@@ -6,8 +6,6 @@ const Comment = require('../models/comment')
 blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog
         .find({})
-        .populate('user', { username: 1, name: 1 })
-    .populate('comments', { content: 1 })
 
     response.json(blogs)
 })
@@ -34,6 +32,8 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     })
 
     const savedBlog = await blog.save()
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save();
     response.status(201).json(savedBlog)
 })
 
@@ -52,6 +52,8 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
 
     await Blog.findByIdAndRemove(request.params.id)
   // also delete the comments from this blog
+  user.blogs.filter((blog) => blog.id !== request.params.id);
+  await user.save();
   await Comment.deleteMany({ blogId: request.params.id })
 
     response.status(204).end()
@@ -83,7 +85,7 @@ blogsRouter.get('/:blogId/comments', middleware.blogExtractor, async (request, r
   const blog = request.blog;
 
   const comments = await Comment
-    .find({ blog: blog._id });
+    .find({ blogId: blog._id });
   response.json(comments);
 })
 
@@ -93,7 +95,7 @@ blogsRouter.post('/:blogId/comments', middleware.blogExtractor, async (request, 
 
   const comment = new Comment({
     content: body.content,
-    blog: blog._id
+    blogId: blog._id
   })
 
   const savedComment = await comment.save();

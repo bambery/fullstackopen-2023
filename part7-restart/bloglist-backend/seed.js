@@ -79,6 +79,8 @@ const seedDB = async () => {
         user: randUser.id
       }
       const newBlog = new Blog(blogData);
+      randUser.blogs = randUser.blogs.concat(newBlog._id);
+      await randUser.save();
       const savedBlog = await newBlog.save()
     }
 
@@ -96,7 +98,7 @@ const seedDB = async () => {
       const randBlog = blogs[randomIdx(blogs.length)];
       const commentData = {
         content: faker.word.words({ count: { min: 3, max: 10 }}),
-        blog: randBlog.id
+        blogId: randBlog.id
       }
       const newComment = new Comment(commentData);
       const savedComment = await newComment.save();
