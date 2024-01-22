@@ -6,6 +6,7 @@ const Comment = require('../models/comment')
 blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog
         .find({})
+    .populate('user', { name: 1, username: 1 });
 
     response.json(blogs)
 })

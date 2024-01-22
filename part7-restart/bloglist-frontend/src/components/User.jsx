@@ -9,6 +9,10 @@ const User = () => {
     ?  users.find(user => user.id === match.params.id)
     : null
 
+  if (!user) {
+    return null;
+  }
+
   return(
     <div>
       <h1>{user.name}</h1>
