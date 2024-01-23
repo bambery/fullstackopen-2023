@@ -6,6 +6,7 @@ import {
   Link,
   Outlet,
 } from 'react-router-dom';
+import styled, { createGlobalStyle } from 'styled-components';
 
 import Nav from './components/Nav';
 import LoginForm from "./components/LoginForm";
@@ -15,6 +16,27 @@ import blogService from "./services/blogs";
 import { setBlogs } from "./reducers/blogReducer";
 import { setUsers } from './reducers/userReducer';
 import { newNotification, newError } from './reducers/notificationReducer'
+
+const GlobalStyle = createGlobalStyle`
+  :root {
+    --champagne: #F9CDAD;
+    --pink: #FE4365;
+    --palePink: #FC9D9A;
+    --mint: #83AF9B;
+    --tan: #C8C8A9;
+  }
+`
+
+const StyledCenteringDiv = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  background-color: var(--tan);
+`
+
+const MainContainer = styled.div`
+  width: 800px;
+`
 
 const App = () => {
   const dispatch = useDispatch();
@@ -27,8 +49,8 @@ const App = () => {
   }, [dispatch]);
 
   return (
-    <div className="centering-div">
-      <div className="main-container">
+    <StyledCenteringDiv>
+      <MainContainer>
         <Notification />
         {!loggedIn && <LoginForm />}
         {loggedIn && (
@@ -38,8 +60,8 @@ const App = () => {
             <Outlet />
           </div>
         )}
-      </div>
-    </div>
+      </MainContainer>
+    </StyledCenteringDiv>
   );
 };
 
