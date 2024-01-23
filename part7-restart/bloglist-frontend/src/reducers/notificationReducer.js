@@ -28,23 +28,24 @@ const notificationSlice = createSlice({
 });
 
 export const newNotification = (message) => {
-  return async dispatch => {
-    dispatch(createNotification(message))
+  return async (dispatch) => {
+    dispatch(createNotification(message));
     setTimeout(() => {
-      dispatch(clearNotification())
-    }, 5000)
-  }
-}
+      dispatch(clearNotification());
+    }, 5000);
+  };
+};
 
 export const newError = (message) => {
-  return async dispatch => {
-    dispatch(createError(message))
+  return async (dispatch) => {
+    dispatch(createError(message));
     setTimeout(() => {
-      dispatch(clearNotification())
-    }, 5000)
-  }
-}
+      dispatch(clearNotification());
+    }, 5000);
+  };
+};
 
-export const { createNotification, createError, clearNotification } = notificationSlice.actions
+export const { createNotification, createError, clearNotification } =
+  notificationSlice.actions;
 
-export default notificationSlice.reducer
+export default notificationSlice.reducer;

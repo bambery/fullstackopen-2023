@@ -1,6 +1,6 @@
-import { useRef } from 'react';
+import { useRef } from "react";
 import BlogForm from "./BlogForm";
-import BlogList from './BlogList';
+import BlogList from "./BlogList";
 import Toggleable from "./Toggleable";
 
 const Blogs = () => {
@@ -13,7 +13,7 @@ const Blogs = () => {
       </Toggleable>
       <BlogList />
     </>
-  )
-}
+  );
+};
 
 export default Blogs;

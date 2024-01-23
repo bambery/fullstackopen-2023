@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { useDispatch } from 'react-redux'
-import { appendBlog } from '../reducers/blogReducer'
-import { newNotification, newError } from '../reducers/notificationReducer'
-import blogService from '../services/blogs'
+import { useDispatch } from "react-redux";
+import { appendBlog } from "../reducers/blogReducer";
+import { newNotification, newError } from "../reducers/notificationReducer";
+import blogService from "../services/blogs";
 
 const BlogForm = ({ toggleForm }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -18,8 +18,12 @@ const BlogForm = ({ toggleForm }) => {
         author,
         url,
       });
-      dispatch(newNotification(`New blog: "${newBlog.title}" by ${newBlog.author} added`));
-      dispatch(appendBlog(newBlog))
+      dispatch(
+        newNotification(
+          `New blog: "${newBlog.title}" by ${newBlog.author} added`,
+        ),
+      );
+      dispatch(appendBlog(newBlog));
 
       setTitle("");
       setAuthor("");

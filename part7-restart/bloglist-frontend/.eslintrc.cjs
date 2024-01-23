@@ -4,49 +4,35 @@ module.exports = {
     browser: true,
     es2020: true,
     "jest/globals": true,
-    "cypress/globals": true
+    "cypress/globals": true,
   },
   extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-    'plugin:react-hooks/recommended',
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
   ],
-  ignorePatterns: [
-    'dist',
-    '.eslintrc.cjs'
-  ],
+  ignorePatterns: ["dist", ".eslintrc.cjs"],
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module'
+    ecmaVersion: "latest",
+    sourceType: "module",
   },
-  settings: { react: { version: '18.2' } },
-  plugins: [
-    'react',
-    'react-refresh',
-    'cypress',
-    'jest'
-  ],
+  settings: { react: { version: "18.2" } },
+  plugins: ["react", "react-refresh", "cypress", "jest"],
   rules: {
-    'react-refresh/only-export-components': [
-      'warn',
+    "react-refresh/only-export-components": [
+      "warn",
       { allowConstantExport: true },
     ],
-    'react/prop-types': 0,
-    "eqeqeq": "error",
+    "react/prop-types": 0,
+    eqeqeq: "error",
     "no-trailing-spaces": "error",
-    "object-curly-spacing": [
-      "error", "always"
-    ],
-    "template-curly-spacing": [
-      "error", "never"
-    ],
-    "arrow-spacing": [
-      "error", { "before": true, "after": true }
-    ],
+    "object-curly-spacing": ["error", "always"],
+    "template-curly-spacing": ["error", "never"],
+    "arrow-spacing": ["error", { before: true, after: true }],
     "no-console": 0,
     "react/prop-types": 0,
     "react/react-in-jsx-scope": "off",
-    "react/jsx-uses-react": "error"
+    "react/jsx-uses-react": "error",
   },
-}
+};

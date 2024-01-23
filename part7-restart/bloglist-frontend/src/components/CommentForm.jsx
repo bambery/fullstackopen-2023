@@ -9,10 +9,10 @@ const CommentForm = ({ blogId, handleNewComment }) => {
     e.preventDefault();
     handleNewComment({
       content: comment.value,
-      blogId: blogId
+      blogId: blogId,
     });
     comment.onReset();
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -21,7 +21,7 @@ const CommentForm = ({ blogId, handleNewComment }) => {
         <button type="submit">add comment</button>
       </div>
     </form>
-  )
-}
+  );
+};
 
 export default CommentForm;

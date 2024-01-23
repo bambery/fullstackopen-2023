@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux'
-import { Link, useMatch } from 'react-router-dom';
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useMatch } from "react-router-dom";
 
 const UserList = () => {
   const dispatch = useDispatch();
 
-  const users = useSelector(state => state.users);
+  const users = useSelector((state) => state.users);
 
   return (
     <div>
@@ -19,21 +19,19 @@ const UserList = () => {
         </thead>
         <tbody>
           {users
-              .toSorted((a, b) => b.blogs.length - a.blogs.length)
-              .map((user) => (
-                <tr key={user.id}>
-                  <td>
-                    <Link to={`/users/${user.id}`}>
-                     {user.name}
-                    </Link>
-                  </td>
-                  <td>{user.blogs.length}</td>
-                </tr>
-              ))}
+            .toSorted((a, b) => b.blogs.length - a.blogs.length)
+            .map((user) => (
+              <tr key={user.id}>
+                <td>
+                  <Link to={`/users/${user.id}`}>{user.name}</Link>
+                </td>
+                <td>{user.blogs.length}</td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>
-  )
-}
+  );
+};
 
 export default UserList;
